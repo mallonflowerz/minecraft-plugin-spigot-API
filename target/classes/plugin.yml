@@ -1,0 +1,4 @@
+name: plugin-demo
+main: com.mallonflowerz.spigot.Plugin
+version: 1.0-SNAPSHOT
+api-version: 1.15
