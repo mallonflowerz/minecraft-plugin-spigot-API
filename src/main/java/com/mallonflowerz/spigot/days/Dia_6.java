@@ -134,16 +134,32 @@ public class Dia_6 implements Listener {
         } else if (event.getEntityType() == EntityType.PLAYER &&
                 (event.getDamager().getType() == EntityType.SILVERFISH && event.getDamager().getCustomName() != null &&
                         event.getDamager().getCustomName().equals("Silver"))) {
-            Player player = (Player ) event.getEntity();
+            Player player = (Player) event.getEntity();
 
             ItemStack[] inventoryContents = player.getInventory().getContents();
             ItemStack randomItem = getRandomItem(inventoryContents);
-
             if (randomItem != null) {
-                player.getInventory().remove(randomItem);
-                player.getWorld().dropItem(player.getLocation().add(0, 0, 3), randomItem);
+                // Verificar y eliminar el item del inventario del jugador
+                if (player.getInventory().contains(randomItem)) {
+                    player.getInventory().remove(randomItem);
+                } else {
+                    // Verificar y eliminar el item de las ranuras de armadura del jugador
+                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+                    for (int i = 0; i < armorContents.length; i++) {
+                        if (armorContents[i] != null && armorContents[i].equals(randomItem)) {
+                            armorContents[i] = null;
+                            player.getInventory().setArmorContents(armorContents);
+                            break;
+                        }
+                    }
+                    // Verificar y eliminar el item de la mano izquierda del jugador
+                    if (player.getInventory().getItemInOffHand().equals(randomItem)) {
+                        player.getInventory().setItemInOffHand(null);
+                    }
+                }
+                player.getWorld().dropItem(player.getLocation().add(1, 0, 1), randomItem);
             }
-        } 
+        }
     }
 
     @EventHandler
@@ -210,7 +226,7 @@ public class Dia_6 implements Listener {
         }
     }
 
-    private ItemStack getRandomItem(ItemStack[] inventoryContents) {
+    public ItemStack getRandomItem(ItemStack[] inventoryContents) {
         ItemStack randomItem = null;
         int itemCount = 0;
         for (ItemStack item : inventoryContents) {

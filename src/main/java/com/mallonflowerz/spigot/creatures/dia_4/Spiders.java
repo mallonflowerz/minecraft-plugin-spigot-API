@@ -1,72 +1,38 @@
 package com.mallonflowerz.spigot.creatures.dia_4;
 
-import org.bukkit.entity.Spider;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.potion.PotionEffect;
+import java.util.Random;
 
-import com.mallonflowerz.spigot.statics.Potions;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Spiders {
 
-    private final static int M = Integer.MAX_VALUE;
+        private final static int M = Integer.MAX_VALUE;
+        private Random random = new Random();
 
-    // Level 1: Speed 1, Regeneracion 2, HEALTH BOOST 2
-    public Spider spiderLevelOne(CreatureSpawnEvent event) {
-        Spider spider = (Spider) event.getEntity();
-        spider.setCustomName("Spider Level 1");
-        spider.setCustomNameVisible(false);
-        spider.addPotionEffect(
-                new PotionEffect(Potions.SP, M, 1, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.RE, M, 2, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.HB, M, 2, true, false));
-        return spider;
-    }
+        public void applyRandomEffect(LivingEntity entity) {
+                PotionEffectType[] effects = {
+                                PotionEffectType.SPEED,
+                                PotionEffectType.REGENERATION,
+                                PotionEffectType.DAMAGE_RESISTANCE,
+                                PotionEffectType.GLOWING,
+                                PotionEffectType.INVISIBILITY,
+                                PotionEffectType.JUMP,
+                                PotionEffectType.HEALTH_BOOST,
+                                PotionEffectType.INCREASE_DAMAGE
+                };
 
-    // Level 2: Speed 2, Regeneracion 2, Resistencia 1
-    public Spider spiderLevelTwo(CreatureSpawnEvent event) {
-        Spider spider = (Spider) event.getEntity();
-        spider.setCustomName("Spider Level 2");
-        spider.setCustomNameVisible(false);
-        spider.addPotionEffect(
-                new PotionEffect(Potions.SP, M, 2, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.RE, M, 2, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.DR, M, 1, true, false));
-        return spider;
-    }
+                int maxEffects = 4; // Máximo número de efectos que pueden aplicarse
+                int numEffects = random.nextInt(maxEffects) + 1; // Número aleatorio de efectos a aplicar
 
-    // Level 3: Speed 3, Regeneracion 3, Resistencia 1, Jump 1
-    public Spider spiderLevelThree(CreatureSpawnEvent event) {
-        Spider spider = (Spider) event.getEntity();
-        spider.setCustomName("Spider Level 3");
-        spider.setCustomNameVisible(false);
-        spider.addPotionEffect(
-                new PotionEffect(Potions.SP, M, 3, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.RE, M, 3, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.DR, M, 1, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.JU, M, 1, true, false));
-        return spider;
-    }
+                for (int i = 0; i < numEffects; i++) {
+                        PotionEffectType effectType = effects[random.nextInt(effects.length)];
+                        int effectDuration = M;
+                        int effectLevel = random.nextInt(2) + 1; // Nivel entre 1 y 4
 
-    // Level 4: Speed 4, Regeneracion 1, Resistencia 2, Jump 2
-    public Spider spiderLevelFour(CreatureSpawnEvent event) {
-        Spider spider = (Spider) event.getEntity();
-        spider.setCustomName("Spider Level 4");
-        spider.setCustomNameVisible(false);
-        spider.addPotionEffect(
-                new PotionEffect(Potions.SP, M, 4, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.RE, M, 1, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.DR, M, 2, true, false));
-        spider.addPotionEffect(
-                new PotionEffect(Potions.JU, M, 2, true, false));
-        return spider;
-    }
+                        PotionEffect potionEffect = new PotionEffect(effectType, effectDuration, effectLevel);
+                        entity.addPotionEffect(potionEffect);
+                }
+        }
 }
