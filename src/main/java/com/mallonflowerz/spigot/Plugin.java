@@ -18,6 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 import com.mallonflowerz.spigot.days.Dia_2;
 import com.mallonflowerz.spigot.days.Dia_4;
 import com.mallonflowerz.spigot.days.Dia_6;
+import com.mallonflowerz.spigot.days.Dia_8;
 import com.mallonflowerz.spigot.items.ChestTop;
 
 public class Plugin extends JavaPlugin {
@@ -25,40 +26,43 @@ public class Plugin extends JavaPlugin {
 
   private final ChestTop chestTop = new ChestTop();
   private final Dia_6 dia_6 = new Dia_6();
+  private final Dia_8 dia_8 = new Dia_8();
 
   public void onEnable() {
     LOGGER.info("PLUGIN DEMO ENABLED");
     // chestTop.spawnChestWithItemsTop(new
     // Location(getServer().getWorld(Mundos.WORLD_OVERWORLD), 0, 90, 0));
-
+    getServer().getPluginManager().registerEvents(dia_8, this);
+    dia_8.addEntities();
+    dia_8.addMobsPasives();
     // Dia 6
-    getServer().getPluginManager().registerEvents(dia_6, this);
-    getServer().getScheduler().runTaskTimer(this, new Runnable() {
-      @Override
-      public void run() {
-        for (Player player : getServer().getOnlinePlayers()) {
-          Inventory inventory = player.getInventory();
-          if (inventory == null) {
-            return;
-          }
+    // getServer().getPluginManager().registerEvents(dia_6, this);
+    // getServer().getScheduler().runTaskTimer(this, new Runnable() {
+    // @Override
+    // public void run() {
+    // for (Player player : getServer().getOnlinePlayers()) {
+    // Inventory inventory = player.getInventory();
+    // if (inventory == null) {
+    // return;
+    // }
 
-          if (player.getInventory().getHelmet() != null &&
-              player.getInventory().getHelmet().isSimilar(getCustomHelmetItem())) {
-            removeNegativeEffect(player);
-          } else {
-            applyNegativeEffect(player);
-          }
+    // if (player.getInventory().getHelmet() != null &&
+    // player.getInventory().getHelmet().isSimilar(getCustomHelmetItem())) {
+    // removeNegativeEffect(player);
+    // } else {
+    // applyNegativeEffect(player);
+    // }
 
-          if (player.getInventory().contains(getCustomBarrierItem())) {
-            dia_6.desblockInventory(player);
-          } else {
-            dia_6.blockedInventory(player);
-          }
-        }
-      }
-    }, 0L, 0L);
-    registerCustomRecipe();
-    registerCustomBarrierCrafting();
+    // if (player.getInventory().contains(getCustomBarrierItem())) {
+    // dia_6.desblockInventory(player);
+    // } else {
+    // dia_6.blockedInventory(player);
+    // }
+    // }
+    // }
+    // }, 0L, 0L);
+    // registerCustomRecipe();
+    // registerCustomBarrierCrafting();
   }
 
   public void onDisable() {
@@ -70,7 +74,6 @@ public class Plugin extends JavaPlugin {
     ItemMeta itemMeta = customItem.getItemMeta();
 
     itemMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 5, true);
-    itemMeta.setUnbreakable(true);
     itemMeta.setDisplayName("\u00A7r\u00A76Space Helmet");
     itemMeta.setLore(null);
 
@@ -128,7 +131,6 @@ public class Plugin extends JavaPlugin {
     ItemMeta itemMeta = customItem.getItemMeta();
 
     itemMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 5, true);
-    itemMeta.setUnbreakable(true);
     itemMeta.setDisplayName("\u00A7r\u00A76Space Helmet");
     itemMeta.setLore(null);
 

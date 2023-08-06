@@ -134,7 +134,7 @@ public class Dia_6 implements Listener {
         } else if (event.getEntityType() == EntityType.PLAYER &&
                 (event.getDamager().getType() == EntityType.SILVERFISH && event.getDamager().getCustomName() != null &&
                         event.getDamager().getCustomName().equals("Silver"))) {
-            Player player = (Player) event.getEntity();
+            Player player = (Player ) event.getEntity();
 
             ItemStack[] inventoryContents = player.getInventory().getContents();
             ItemStack randomItem = getRandomItem(inventoryContents);
@@ -143,8 +143,7 @@ public class Dia_6 implements Listener {
                 player.getInventory().remove(randomItem);
                 player.getWorld().dropItem(player.getLocation().add(0, 0, 3), randomItem);
             }
-
-        }
+        } 
     }
 
     @EventHandler
