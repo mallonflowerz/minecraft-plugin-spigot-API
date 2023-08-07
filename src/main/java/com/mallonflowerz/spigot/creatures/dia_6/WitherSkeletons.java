@@ -20,7 +20,7 @@ public class WitherSkeletons {
         witherSkeleton.setCustomName("Wither Skeleton The Golden");
         witherSkeleton.setCustomNameVisible(true);
         equip.setHelmet(new ItemStack(Material.GOLDEN_HELMET));
-        equip.setHelmetDropChance(1.0F);
+        equip.setHelmetDropChance(0F);
         equip.setChestplate(new ItemStack(Material.GOLDEN_CHESTPLATE));
         equip.setChestplateDropChance(0);
         equip.setLeggings(new ItemStack(Material.GOLDEN_LEGGINGS));
