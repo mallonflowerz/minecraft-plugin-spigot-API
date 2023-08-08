@@ -62,6 +62,7 @@ public class Dia_8 implements Listener {
     private Message message = new Message();
     private Random random = new Random();
     private Dia_6 dia_6 = new Dia_6();
+    private final Mundos mundos = new Mundos();
 
     @EventHandler
     public void onStepFire(PlayerMoveEvent event) {
@@ -111,31 +112,31 @@ public class Dia_8 implements Listener {
                 entityToZombie.put(entity.getType(), zombie);
             }
             if (event.getEntityType() == EntityType.ENDERMAN &&
-                    isOverworld(event.getEntity()))
+                    mundos.isOverworld(event.getEntity()))
                 event.getEntity().setCustomName("Vampiro Enderman");
             if (event.getEntityType() == EntityType.SLIME &&
-                    isOverworld(event.getEntity()))
+                    mundos.isOverworld(event.getEntity()))
                 event.getEntity().setCustomName("Slime Corrosivo");
             if (event.getEntityType() == EntityType.MAGMA_CUBE &&
-                    isNether(event.getEntity()))
+                    mundos.isNether(event.getEntity()))
                 event.getEntity().setCustomName("Magma Fire");
             if (event.getEntityType() == EntityType.SPIDER ||
                     event.getEntityType() == EntityType.CAVE_SPIDER)
                 applyRandomEffect(event.getEntity());
             if (event.getEntityType() == EntityType.SKELETON &&
-                    isNether(event.getEntity())) {
+                    mundos.isNether(event.getEntity())) {
                 event.getEntity().getLocation().getWorld().spawnEntity(event.getLocation(),
                         EntityType.WITCH);
                 event.setCancelled(true);
             }
             if (event.getEntityType() == EntityType.ENDERMAN &&
-                    isNether(event.getEntity())) {
+                    mundos.isNether(event.getEntity())) {
                 Creeper creeper = (Creeper) event.getLocation().getWorld().spawnEntity(event.getLocation(),
                         EntityType.CREEPER);
                 creeper.setPowered(true);
                 event.setCancelled(true);
             }
-            if (event.getEntityType() == EntityType.ZOMBIFIED_PIGLIN && isNether(event.getEntity())) {
+            if (event.getEntityType() == EntityType.ZOMBIFIED_PIGLIN && mundos.isNether(event.getEntity())) {
                 PigZombie pigZombie = (PigZombie) event.getEntity();
                 pigZombie.getEquipment().setHelmet(new ItemStack(Material.IRON_HELMET));
                 pigZombie.getEquipment().setHelmetDropChance(0);
@@ -149,7 +150,7 @@ public class Dia_8 implements Listener {
                 pigZombie.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
                 pigZombie.getEquipment().setItemInMainHandDropChance(0);
             }
-            if (event.getEntityType() == EntityType.PIGLIN_BRUTE && isNether(event.getEntity())) {
+            if (event.getEntityType() == EntityType.PIGLIN_BRUTE && mundos.isNether(event.getEntity())) {
                 PiglinBrute piglinBrute = (PiglinBrute) event.getEntity();
                 piglinBrute.addPotionEffect(
                         new PotionEffect(Potions.DR, Integer.MAX_VALUE, 0));
@@ -186,17 +187,17 @@ public class Dia_8 implements Listener {
             event.getDrops().clear();
         }
         if (event.getEntityType() == EntityType.WITCH &&
-                isNether(event.getEntity())) {
+                mundos.isNether(event.getEntity())) {
             ItemStack goldBlock = new ItemStack(Material.GOLD_BLOCK);
             event.getDrops().add(goldBlock);
         }
         if (event.getEntityType() == EntityType.PIGLIN_BRUTE &&
-                isNether(event.getEntity())) {
+                mundos.isNether(event.getEntity())) {
             ItemStack diamondBlock = new ItemStack(Material.DIAMOND_BLOCK);
             event.getDrops().add(diamondBlock);
         }
         if (event.getEntityType() == EntityType.GHAST &&
-                isNether(event.getEntity())) {
+                mundos.isNether(event.getEntity())) {
             Ghast ghast = (Ghast) event.getEntity();
             TNTPrimed tnt = ghast.getWorld().spawn(ghast.getLocation(), TNTPrimed.class);
             tnt.setFuseTicks(80);
@@ -228,8 +229,9 @@ public class Dia_8 implements Listener {
         Player player = event.getPlayer();
         Block bed = event.getBed();
         if (player.getWorld().getTime() < 13000) {
+            // No es de noche
             event.getPlayer().sendMessage(String
-                    .format(ChatColor.translateAlternateColorCodes('&', "&4No se puede dormir ahora!")));
+                    .format(ChatColor.translateAlternateColorCodes('&', "&l&4No puedes dormir ahora!")));
         } else {
             event.getPlayer().sendMessage(String
                     .format(ChatColor.translateAlternateColorCodes('&',
@@ -282,7 +284,7 @@ public class Dia_8 implements Listener {
             }
         }
         if (event.getEntityType() == EntityType.ENDERMAN &&
-                isOverworld(event.getEntity())) {
+                mundos.isOverworld(event.getEntity())) {
             if (event.getEntity().getWorld().getTime() > 12000) {
                 Enderman enderman = (Enderman) event.getEntity();
                 enderman.addPotionEffect(
@@ -312,7 +314,7 @@ public class Dia_8 implements Listener {
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (event.getEntity() instanceof Creeper && isOverworld(event.getEntity())) {
+        if (event.getEntity() instanceof Creeper && mundos.isOverworld(event.getEntity())) {
             Creeper creeper = (Creeper) event.getEntity();
             creeper.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
         }
@@ -321,7 +323,7 @@ public class Dia_8 implements Listener {
     @EventHandler
     public void onPotionSplash(PotionSplashEvent event) {
         if (event.getEntity().getShooter() instanceof Witch &&
-                isNether(event.getEntity())) {
+                mundos.isNether(event.getEntity())) {
             // Agregar efecto de daño instantáneo al lanzar la poción.
             for (Entity entity : event.getAffectedEntities()) {
                 if (entity instanceof LivingEntity) {
@@ -398,17 +400,5 @@ public class Dia_8 implements Listener {
         entitiesDropClear.add(EntityType.DROWNED);
         entitiesDropClear.add(EntityType.BLAZE);
         entitiesDropClear.add(EntityType.ZOMBIE);
-    }
-
-    private boolean isOverworld(Entity entity) {
-        return entity.getLocation().getWorld().getName().equals(Mundos.WORLD_OVERWORLD);
-    }
-
-    private boolean isNether(Entity entity) {
-        return entity.getLocation().getWorld().getName().equals(Mundos.WORLD_NETHER);
-    }
-
-    private boolean isEnd(Entity entity) {
-        return entity.getLocation().getWorld().getName().equals(Mundos.WORLD_END);
     }
 }
