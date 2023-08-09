@@ -81,8 +81,7 @@ public class Dia_6 implements Listener {
                 event.getEntity().getWorld().getName().equals(Mundos.WORLD_NETHER)) {
             double randomValue = new Random().nextDouble() * 100;
             if (randomValue <= 40.0) {
-                LivingEntity witherSkeleton = event.getEntity();
-                witherSkeleton = witherSkeletons.onSpawnWitherSkeleton(event);
+                witherSkeletons.onSpawnWitherSkeleton(event.getLocation());
             }
 
         } else if (event.getEntityType() == EntityType.CHICKEN &&

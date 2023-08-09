@@ -28,6 +28,10 @@ public class EndCityLootTable {
         this.probs = new ArrayList<>();
         this.alreadyItem = new ArrayList<>();
 
+        for (int i = 0; i < 27; i++) {
+            this.randomLoc.add(Integer.valueOf(i));
+        }
+
         addLoot(this.probs, Material.TOTEM_OF_UNDYING, 1, 2, 6);
         addLoot(this.probs, Material.ANCIENT_DEBRIS, 1, 4, 15);
         addLoot(this.probs, Material.DIAMOND, 1, 15, 30);
@@ -90,8 +94,9 @@ public class EndCityLootTable {
         }
     }
 
-    private List<String> addLoot(List<String> list, Material material, int min, int max, int chance) {
-        list.add(String.format("%s ; %s ; %s ; %s", material.toString(), min, max, chance));
+    private List<String> addLoot(List<String> list, Material material, Integer min, Integer max, Integer chance) {
+        list.add(String.format("%s;%s;%s;%s", material.toString(),
+                min, max, chance));
         return list;
     }
 

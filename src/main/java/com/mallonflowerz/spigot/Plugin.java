@@ -4,6 +4,8 @@ import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.mallonflowerz.spigot.creatures.dia_10.DragonBattle;
+import com.mallonflowerz.spigot.creatures.dia_10.EndConfig;
 import com.mallonflowerz.spigot.days.Dia_10;
 import com.mallonflowerz.spigot.days.Dia_2;
 import com.mallonflowerz.spigot.days.Dia_4;
@@ -21,15 +23,18 @@ public class Plugin extends JavaPlugin {
   // private final Dia_6 dia_6 = new Dia_6();
   // private final Dia_8 dia_8 = new Dia_8();
   private Dia_10 dia_10;
+  private EndConfig endConfig;
+  private DragonBattle dragonBattle;
   private RecipeDia10 recipeDia10;
 
   public void onEnable() {
     LOGGER.info("PLUGIN DEMO ENABLED");
     // chestTop.spawnChestWithItemsTop(new
     // Location(getServer().getWorld(Mundos.WORLD_OVERWORLD), 0, 90, 0));
-    dia_10 = new Dia_10(this);
-    getServer().getPluginManager().registerEvents(dia_10, this);
+    endConfig = new EndConfig(this);
+    dragonBattle = new DragonBattle(this);
     // Dia 10
+    // dia_10 = new Dia_10(this);
     // recipeDia10 = new RecipeDia10(this);
     // recipeDia10.registerGoldenApplePlusRecipe();
     // recipeDia10.registerGoldenApplePlusMaxRecipe();

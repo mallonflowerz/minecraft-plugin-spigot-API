@@ -6,7 +6,7 @@ public class Mundos {
 
     public static final String WORLD_NETHER = "world_nether";
     public static final String WORLD_OVERWORLD = "world";
-    public static final String WORLD_END = "world_end";
+    public static final String WORLD_END = "world_the_end";
 
     public boolean isOverworld(Entity entity) {
         return entity.getLocation().getWorld().getName().equals(WORLD_OVERWORLD);

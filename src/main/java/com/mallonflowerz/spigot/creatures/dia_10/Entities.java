@@ -1,14 +1,23 @@
 package com.mallonflowerz.spigot.creatures.dia_10;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Witch;
+import org.bukkit.entity.Wither;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.mallonflowerz.spigot.creatures.dia_6.WitherSkeletons;
+
+import net.md_5.bungee.api.chat.TextComponent;
+
 public class Entities {
+
+    private final WitherSkeletons witherSkeleton = new WitherSkeletons();
 
     public Ghast onGhast(Location location) {
         location.setX(location.getX() + 3);
@@ -43,5 +52,28 @@ public class Entities {
         TNTPrimed tnt = location.getWorld().spawn(location, TNTPrimed.class);
         tnt.setFuseTicks(100);
         return tnt;
+    }
+
+    public Wither onWither(Location location) {
+        Wither wither = (Wither) location.getWorld().spawnEntity(location, EntityType.WITHER);
+        TextComponent text = new TextComponent(ChatColor.DARK_RED + "Wither Revenger");
+        wither.setCustomName(text.toLegacyText());
+        return wither;
+    }
+
+    public Witch onWitch(Location location) {
+        location.setX(location.getX() + 3);
+        location.setY(location.getY() + 1);
+        location.setZ(location.getZ() + 3);
+        Witch witch = location.getWorld().spawn(location, Witch.class);
+        witch.setCustomName("Bruja Instant");
+        return witch;
+    }
+
+    public void onWitherSkeleton(Location location) {
+        location.setX(location.getX() + 3);
+        location.setY(location.getY() + 1);
+        location.setZ(location.getZ() + 3);
+        witherSkeleton.onSpawnWitherSkeleton(location);
     }
 }

@@ -1,8 +1,9 @@
 package com.mallonflowerz.spigot.creatures.dia_6;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.WitherSkeleton;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -12,10 +13,9 @@ import com.mallonflowerz.spigot.statics.Potions;
 
 public class WitherSkeletons {
 
-    
-    
-    public WitherSkeleton onSpawnWitherSkeleton(CreatureSpawnEvent event){
-        WitherSkeleton witherSkeleton = (WitherSkeleton) event.getEntity();
+    public WitherSkeleton onSpawnWitherSkeleton(Location location) {
+        WitherSkeleton witherSkeleton = (WitherSkeleton) location.getWorld().spawnEntity(location,
+                EntityType.WITHER_SKELETON);
         EntityEquipment equip = witherSkeleton.getEquipment();
         witherSkeleton.setCustomName("Wither Skeleton The Golden");
         witherSkeleton.setCustomNameVisible(true);
