@@ -10,7 +10,6 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.FireworkEffect.Type;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EnderDragon;
@@ -26,7 +25,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EnderDragonChangePhaseEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
@@ -43,7 +42,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class DragonBattle implements Listener {
 
     private boolean isBattle = false;
-    private boolean isPhase1 = false;
+    private boolean isPhase1 = true;
     private boolean isPhase2 = false;
     private boolean isPhase3 = false;
     private boolean isPhase4 = false;
@@ -66,19 +65,31 @@ public class DragonBattle implements Listener {
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
         if (event.getEntityType() == EntityType.ENDER_DRAGON) {
-            EnderDragon enderDragon = (EnderDragon) event.getEntity();
-            TextComponent text = new TextComponent(ChatColor.DARK_PURPLE + "Sra Dragona");
-            enderDragon.setCustomName(text.toLegacyText());
-            isBattle = true;
-            message.sendMessage("&6La Fase 1 ha comenzado. A sufrir!!!!");
-            isPhase1 = true;
-        } else if (event.getEntityType() == EntityType.ENDER_CRYSTAL &&
-                mundos.isEnd(event.getEntity())) {
-            EnderCrystal enderCrystal = (EnderCrystal) event.getEntity();
-            Block block = enderCrystal.getLocation().getBlock();
-            if (block.getType() == Material.BEDROCK) {
-                // Obtener la ubicación del End Crystal
-                respawEnderCrystals.add(enderCrystal);
+            if (isPhase1) {
+                EnderDragon enderDragon = (EnderDragon) event.getEntity();
+                TextComponent text = new TextComponent(ChatColor.DARK_AQUA + "Sra Dragona");
+                enderDragon.setCustomName(text.toLegacyText());
+                message.sendMessage("&6La Fase 1 ha comenzado. A sufrir!!!!");
+            } else if (isPhase2) {
+                EnderDragon enderDragon = (EnderDragon) event.getEntity();
+                TextComponent text = new TextComponent(ChatColor.DARK_PURPLE + "Vintage Sra Dragona");
+                enderDragon.setCustomName(text.toLegacyText());
+                message.sendMessage("&bLa Fase 2 ha comenzado. Se pone interesante...");
+            } else if (isPhase3) {
+                EnderDragon enderDragon = (EnderDragon) event.getEntity();
+                TextComponent text = new TextComponent(ChatColor.GOLD + "Furious Sra Dragona");
+                enderDragon.setCustomName(text.toLegacyText());
+                message.sendMessage("&9La Fase 3 ha comenzado. Guau! han sobrevivido.");
+                respawEnderCrystals();
+            } else if (isPhase4) {
+                EnderDragon enderDragon = (EnderDragon) event.getEntity();
+                TextComponent text = new TextComponent(ChatColor.DARK_RED + "Revenger Sra Dragona");
+                enderDragon.setCustomName(text.toLegacyText());
+                message.sendMessage("&cLa Fase Final ha comenzado. &l¡¡El odio de la Dragona esta sobre ustedes!!");
+                respawEnderCrystals();
+                entities.onWither(event.getEntity().getLocation());
+                entities.onWither(event.getEntity().getLocation());
+                spawnIronGolems();
             }
         }
     }
@@ -132,8 +143,6 @@ public class DragonBattle implements Listener {
                 }
             }
         } else if (c == EnderDragon.Phase.SEARCH_FOR_BREATH_ATTACK_TARGET) {
-            message.sendMessage(
-                    String.format("&1La Sra Dragona esta a punto de tirar su aliento a cualquier jugador"));
             if (isPhase3) {
                 spawnMobsRandom();
             }
@@ -156,52 +165,25 @@ public class DragonBattle implements Listener {
     }
 
     @EventHandler
-    public void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntityType() == EntityType.ENDER_DRAGON && isBattle) {
-            EnderDragon enderDragon = (EnderDragon) event.getEntity();
-            double currentHealth = enderDragon.getHealth();
-            double maxHealth = enderDragon.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-            if (currentHealth < maxHealth * 0.75) {
-                isSend = false;
-                isPhase1 = false;
-                isPhase2 = true;
-                if (!isSend) {
-                    message.sendMessage("&bLa Fase 2 ha comenzado. Se pone interesante...");
-                    isSend = true;
-                }
-
-            } else if (currentHealth < maxHealth * 0.50) {
-                isSend = false;
-                isPhase2 = false;
-                isPhase3 = true;
-                if (!isSend) {
-                    message.sendMessage("&9La Fase 3 ha comenzado. Guau! han sobrevivido.");
-                    isSend = true;
-                }
-
-                respawEnderCrystals();
-            } else if (currentHealth < maxHealth * 0.25) {
-                isSend = false;
-                isPhase3 = false;
-                isPhase4 = true;
-
-                if (!isSend) {
-                    message.sendMessage("&cLa Fase Final ha comenzado. &l¡¡El odio de la Dragona esta sobre ustedes!!");
-                    isSend = true;
-                }
-                if (!spawnFinal) {
-                    respawEnderCrystals();
-                    entities.onWither(enderDragon.getLocation());
-                    entities.onWither(enderDragon.getLocation());
-                    spawnIronGolems();
-                }
-                spawnFinal = true;
-                if (currentHealth == maxHealth * 0.00) {
-                    isBattle = false;
-                    message.sendMessage("&c¡¡Felicidades!! Lograron vencer a la Dragona. Afortunados!!");
-                    spawnFireworks(enderDragon.getLocation());
-                }
-            }
+    public void onEntityDeath(EntityDeathEvent event) {
+        if (event.getEntityType() == EntityType.ENDER_DRAGON && isPhase1) {
+            isPhase1 = false;
+            isPhase2 = true;
+            event.getEntity().getWorld().spawn(event.getEntity().getLocation(), EnderDragon.class);
+            respawEnderCrystals();
+        } else if (event.getEntityType() == EntityType.ENDER_DRAGON && isPhase2) {
+            isPhase2 = false;
+            isPhase3 = true;
+            event.getEntity().getWorld().spawn(event.getEntity().getLocation(), EnderDragon.class);
+            respawEnderCrystals();
+        } else if (event.getEntityType() == EntityType.ENDER_DRAGON && isPhase3) {
+            isPhase3 = false;
+            isPhase4 = true;
+            event.getEntity().getWorld().spawn(event.getEntity().getLocation(), EnderDragon.class);
+            respawEnderCrystals();
+        } else if (event.getEntityType() == EntityType.ENDER_DRAGON && isPhase4) {
+            isPhase4 = false;
+            isPhase1 = true;
         }
     }
 
@@ -227,7 +209,7 @@ public class DragonBattle implements Listener {
                 mundos.isEnd(event.getEntity()) && isBattle
                 && event.getEntity().getCustomName() != null
                 && event.getEntity().getCustomName().equals("TNTCabum")) {
-            // event.blockList().clear();
+            event.blockList().clear();
             event.setYield(30.0F);
         } else if (mundos.isEnd(event.getEntity())) {
             event.blockList().clear();

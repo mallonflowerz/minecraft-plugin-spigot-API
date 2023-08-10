@@ -1,13 +1,12 @@
 package com.mallonflowerz.spigot.creatures.dia_10;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.EntityType;
@@ -15,7 +14,6 @@ import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Shulker;
 import org.bukkit.entity.TNTPrimed;
@@ -27,11 +25,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.world.LootGenerateEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootContext;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
@@ -150,61 +147,37 @@ public class EndConfig implements Listener {
     public void onLootGenerate(LootGenerateEvent event) {
         InventoryHolder inventoryHolder = event.getInventoryHolder();
         LootContext context = event.getLootContext();
-
-        inventoryHolder.getInventory().clear();
-
         Collection<ItemStack> customLoot = loot.populateLoot(random, context);
 
-        for (ItemStack item : customLoot) {
-            inventoryHolder.getInventory().addItem(item);
+        Inventory inventory = inventoryHolder.getInventory();
+        int[] emptySlots = getEmptySlots(inventory.getSize(), inventory);
+
+        for (int i = 0; i < customLoot.size(); i++) {
+            ItemStack item = (ItemStack) customLoot.toArray()[i];
+            int slotIndex = emptySlots[i % emptySlots.length];
+            inventory.setItem(slotIndex, item);
         }
 
         event.setCancelled(true);
     }
 
-    // @EventHandler
-    // public void onPlayerInteract(PlayerInteractEvent event) {
-    // if (event.getClickedBlock() != null &&
-    // event.getClickedBlock().getType() == Material.CHEST &&
-    // mundos.isEnd(event.getPlayer())) {
-    // Chest chest = (Chest) event.getClickedBlock().getState();
-    // markChest(chest, event.getPlayer());
-    // lootTable.populateChest(chest);
-    // }
-    // }
-
-    // @EventHandler
-    // public void onBlockBreak(BlockBreakEvent event) {
-    // Player player = event.getPlayer();
-    // Block block = event.getBlock();
-    // if (player.getWorld().getName().equals(Mundos.WORLD_END) &&
-    // block.getWorld().getName().equals(Mundos.WORLD_END)
-    // && block.getType() == Material.CHEST) {
-    // Chest chest = (Chest) block.getState();
-    // markChest(chest, player);
-    // lootTable.populateChest(chest);
-    // }
-    // }
-
-    private boolean hasPlayerInteracted(Block block, String playerName) {
-        BlockState blockState = block.getState();
-        List<MetadataValue> metadataValues = blockState.getMetadata(playerName);
-        for (MetadataValue metadataValue : metadataValues) {
-            if (metadataValue.asBoolean()) {
-                return true;
+    private int[] getEmptySlots(int size, Inventory inventory) {
+        List<Integer> emptySlots = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            if (inventory.getItem(i) == null) {
+                emptySlots.add(i);
             }
         }
-        return false;
+        // Mezclar los índices de los slots vacíos
+        Collections.shuffle(emptySlots);
+
+        int[] emptySlotsArray = new int[emptySlots.size()];
+        for (int i = 0; i < emptySlotsArray.length; i++) {
+            emptySlotsArray[i] = emptySlots.get(i);
+        }
+
+        return emptySlotsArray;
     }
 
-    private void setPlayerInteracted(Block block, String playerName) {
-        BlockState blockState = block.getState();
-        blockState.setMetadata(playerName, new FixedMetadataValue(plugin, true));
-    }
 
-    private void markChest(Chest chest, Player player) {
-        if (hasPlayerInteracted(chest.getBlock(), player.getName()))
-            return;
-        setPlayerInteracted(chest.getBlock(), player.getName());
-    }
 }
