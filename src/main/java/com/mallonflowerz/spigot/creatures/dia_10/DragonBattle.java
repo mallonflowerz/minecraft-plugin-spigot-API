@@ -1,6 +1,6 @@
 package com.mallonflowerz.spigot.creatures.dia_10;
-
-import java.util.ArrayList;
+ 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
@@ -18,17 +19,21 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Witch;
+import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EnderDragonChangePhaseEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -46,25 +51,38 @@ public class DragonBattle implements Listener {
     private boolean isPhase2 = false;
     private boolean isPhase3 = false;
     private boolean isPhase4 = false;
-    private boolean spawnFinal = false;
-    private boolean isSend = false;
+    private int countCristal = 4;
     private Location breathAttackLocation = null;
     private final Plugin plugin;
     private final Entities entities = new Entities();
     private final Mundos mundos = new Mundos();
     private final Message message = new Message();
     private final Random random = new Random();
-    private final List<EnderCrystal> respawEnderCrystals = new ArrayList<>();
 
-    public DragonBattle(Plugin plugin) {
+    public DragonBattle(final Plugin plugin) {
         this.plugin = plugin;
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+
+        plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
+            @Override
+            public void run() {
+                for (Player p : plugin.getServer().getOnlinePlayers()) {
+                    if (!p.getWorld().getName().equals(Mundos.WORLD_END)) {
+                        p.damage(0.5);
+                        TextComponent text = new TextComponent(
+                                ChatColor.RED + "No puedes estar aqui mientras la batalla del End esta activa!!");
+                        p.sendMessage(text.toLegacyText());
+                    }
+                }
+            }
+        }, 0L, 20L);
     }
 
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
         if (event.getEntityType() == EntityType.ENDER_DRAGON) {
+            isBattle = true;
             if (isPhase1) {
                 EnderDragon enderDragon = (EnderDragon) event.getEntity();
                 TextComponent text = new TextComponent(ChatColor.DARK_AQUA + "Sra Dragona");
@@ -80,15 +98,12 @@ public class DragonBattle implements Listener {
                 TextComponent text = new TextComponent(ChatColor.GOLD + "Furious Sra Dragona");
                 enderDragon.setCustomName(text.toLegacyText());
                 message.sendMessage("&9La Fase 3 ha comenzado. Guau! han sobrevivido.");
-                respawEnderCrystals();
             } else if (isPhase4) {
                 EnderDragon enderDragon = (EnderDragon) event.getEntity();
                 TextComponent text = new TextComponent(ChatColor.DARK_RED + "Revenger Sra Dragona");
                 enderDragon.setCustomName(text.toLegacyText());
                 message.sendMessage("&cLa Fase Final ha comenzado. &l¡¡El odio de la Dragona esta sobre ustedes!!");
-                respawEnderCrystals();
-                entities.onWither(event.getEntity().getLocation());
-                entities.onWither(event.getEntity().getLocation());
+                onWither();
                 spawnIronGolems();
             }
         }
@@ -156,6 +171,7 @@ public class DragonBattle implements Listener {
                 tnt.setCustomName("TNTCabum");
                 tnt.setCustomNameVisible(false);
                 tnt.setFuseTicks(60);
+                tnt.setYield(25.0F);
                 tnt.setVisibleByDefault(false);
             }
             if (isPhase3) {
@@ -169,36 +185,83 @@ public class DragonBattle implements Listener {
         if (event.getEntityType() == EntityType.ENDER_DRAGON && isPhase1) {
             isPhase1 = false;
             isPhase2 = true;
-            event.getEntity().getWorld().spawn(event.getEntity().getLocation(), EnderDragon.class);
-            respawEnderCrystals();
+            addEnderCrystals();
         } else if (event.getEntityType() == EntityType.ENDER_DRAGON && isPhase2) {
             isPhase2 = false;
             isPhase3 = true;
-            event.getEntity().getWorld().spawn(event.getEntity().getLocation(), EnderDragon.class);
-            respawEnderCrystals();
+            addEnderCrystals();
         } else if (event.getEntityType() == EntityType.ENDER_DRAGON && isPhase3) {
             isPhase3 = false;
             isPhase4 = true;
-            event.getEntity().getWorld().spawn(event.getEntity().getLocation(), EnderDragon.class);
-            respawEnderCrystals();
         } else if (event.getEntityType() == EntityType.ENDER_DRAGON && isPhase4) {
             isPhase4 = false;
             isPhase1 = true;
+            isBattle = false;
+            spawnFireworks(event.getEntity().getLocation());
         }
     }
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof EnderCrystal && event.getDamager() instanceof Player &&
-                mundos.isEnd(event.getEntity()) && isPhase1 && isBattle) {
+                mundos.isEnd(event.getEntity()) && isBattle) {
             EnderCrystal enderCrystal = (EnderCrystal) event.getEntity();
             Location location = enderCrystal.getLocation();
             location.setX(location.getX() - 3);
             location.setY(location.getY() - 8);
             location.setZ(location.getZ() - 3);
             entities.onGhast(location);
+        } else if (event.getEntity() instanceof EnderCrystal && event.getDamager() instanceof Arrow &&
+                mundos.isEnd(event.getEntity()) && isBattle) {
+            Player player = (Player) ((Projectile) event.getDamager()).getShooter();
+            if (player != null) {
+                EnderCrystal enderCrystal = (EnderCrystal) event.getEntity();
+                Location location = enderCrystal.getLocation();
+                location.setX(location.getX() - 3);
+                location.setY(location.getY() - 8);
+                location.setZ(location.getZ() - 3);
+                entities.onGhast(location);
+            }
         } else if (event.getDamager().getType() == EntityType.ENDER_CRYSTAL &&
                 event.getEntityType() == EntityType.GHAST && isBattle) {
+            event.setCancelled(true);
+        } else if (event.getEntityType() == EntityType.ENDER_DRAGON &&
+                event.getDamager().getType() == EntityType.PLAYER) {
+            Player player = (Player) event.getDamager();
+            Material item = player.getInventory().getItemInMainHand().getType();
+            if (random.nextInt(100) + 1 <= 10 && isPhase2) {
+                player.addPotionEffect(
+                        new PotionEffect(PotionEffectType.LEVITATION, 200, 9));
+            } else if (random.nextInt(100) + 1 <= 25 && isPhase3) {
+                player.addPotionEffect(
+                        new PotionEffect(PotionEffectType.LEVITATION, 200, 9));
+            } else if (random.nextInt(100) + 1 <= 35 && isPhase3) {
+                player.addPotionEffect(
+                        new PotionEffect(PotionEffectType.LEVITATION, 200, 9));
+            }
+            if (itemsNetherite.contains(item) && !isPhase1) {
+                event.setCancelled(true);
+            } else if (itemsDiamond.contains(item) && !isPhase2) {
+                event.setCancelled(true);
+            } else if (itemsIron.contains(item) ||
+                    itemsGolden.contains(item) && !isPhase3) {
+                event.setCancelled(true);
+            }
+        } else if (event.getEntityType() == EntityType.ENDER_DRAGON &&
+                event.getDamager().getType() == EntityType.ARROW) {
+            Player player = (Player) ((Projectile) event.getDamager()).getShooter();
+            if (!(random.nextInt(100) + 1 <= 60) && isPhase2 && player != null) {
+                event.setCancelled(true);
+            } else if (!(random.nextInt(100) + 1 <= 40) && isPhase3 && player != null) {
+                event.setCancelled(true);
+            } else if (!(random.nextInt(100) + 1 <= 20) && isPhase4 && player != null) {
+                player.damage(4.0);
+                event.setCancelled(true);
+            }
+        } else if (event.getEntityType() == EntityType.ENDER_CRYSTAL &&
+                event.getDamager().getType() == EntityType.PRIMED_TNT ||
+                event.getDamager().getType() == EntityType.CREEPER ||
+                event.getDamager().getType() == EntityType.FIREBALL && isBattle) {
             event.setCancelled(true);
         }
     }
@@ -210,7 +273,7 @@ public class DragonBattle implements Listener {
                 && event.getEntity().getCustomName() != null
                 && event.getEntity().getCustomName().equals("TNTCabum")) {
             event.blockList().clear();
-            event.setYield(30.0F);
+            event.setYield(20.0F);
         } else if (mundos.isEnd(event.getEntity())) {
             event.blockList().clear();
         }
@@ -230,6 +293,7 @@ public class DragonBattle implements Listener {
                 tnt.setFuseTicks(0); // Ajusta el tiempo de explosión según lo necesites
                 breathAttackLocation = null; // Reiniciar la ubicación después de spawnear la TNT
                 tnt.setVisibleByDefault(false);
+                tnt.setYield(18.0F);
             }
         }
     }
@@ -248,6 +312,44 @@ public class DragonBattle implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof EnderDragon) {
+
+            // Evitar daño por explosiones
+            if (event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION ||
+                    event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+                event.setCancelled(true);
+                return;
+            }
+
+            // Evitar daño de endermans y otros mobs
+            if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                EntityDamageByEntityEvent damageByEntityEvent = (EntityDamageByEntityEvent) event;
+                if (damageByEntityEvent.getDamager() instanceof Player ||
+                        damageByEntityEvent.getDamager() instanceof Arrow) {
+                    // Permitir daño causado por jugadores
+                    return;
+                } else {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
+            // Asegurarse de que el dragón siempre es vulnerable al daño de jugadores
+            if (event instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent damageByEntityEvent = (EntityDamageByEntityEvent) event;
+                if (damageByEntityEvent.getDamager() instanceof Player ||
+                        damageByEntityEvent.getDamager() instanceof Arrow) {
+                    // Permitir daño causado por jugadores
+                    return;
+                }
+            }
+
+            // Otros tipos de daño que no se manejan aquí
+        }
+    }
+
     private void spawnIronGolems() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Location location = player.getLocation();
@@ -257,9 +359,13 @@ public class DragonBattle implements Listener {
         }
     }
 
-    private void respawEnderCrystals() {
-        for (EnderCrystal e : respawEnderCrystals) {
-            e.getWorld().spawn(e.getLocation(), EnderCrystal.class);
+    private void onWither() {
+        for (Player p : plugin.getServer().getOnlinePlayers()) {
+            Location location = p.getLocation();
+            Wither wither = (Wither) location.getWorld().spawnEntity(location, EntityType.WITHER);
+            TextComponent text = new TextComponent(ChatColor.DARK_RED + "Wither Revenger");
+            wither.setCustomName(text.toLegacyText());
+            wither.setTarget(p.getPlayer());
         }
     }
 
@@ -307,10 +413,54 @@ public class DragonBattle implements Listener {
         firework.setFireworkMeta(fireworkMeta);
     }
 
+    private List<Material> itemsNetherite = Arrays.asList(
+            Material.NETHERITE_AXE,
+            Material.NETHERITE_HOE,
+            Material.NETHERITE_SWORD,
+            Material.NETHERITE_PICKAXE,
+            Material.NETHERITE_SHOVEL);
+
+    private List<Material> itemsDiamond = Arrays.asList(
+            Material.DIAMOND_AXE,
+            Material.DIAMOND_HOE,
+            Material.DIAMOND_SWORD,
+            Material.DIAMOND_PICKAXE,
+            Material.DIAMOND_SHOVEL);
+
+    private List<Material> itemsIron = Arrays.asList(
+            Material.IRON_AXE,
+            Material.IRON_HOE,
+            Material.IRON_SWORD,
+            Material.IRON_PICKAXE,
+            Material.IRON_SHOVEL);
+
+    private List<Material> itemsGolden = Arrays.asList(
+            Material.GOLDEN_AXE,
+            Material.GOLDEN_HOE,
+            Material.GOLDEN_SWORD,
+            Material.GOLDEN_PICKAXE,
+            Material.GOLDEN_SHOVEL);
+
+    private void addEnderCrystals() {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (countCristal > 0) {
+                ItemStack item = new ItemStack(Material.END_CRYSTAL, 1);
+                if (player.getInventory().firstEmpty() > -1) {
+                    player.getInventory().addItem(item);
+                    countCristal--;
+                } else {
+                    player.getWorld().dropItemNaturally(player.getLocation(), item);
+                    countCristal--;
+                }
+
+            }
+        }
+    }
+
     private void applyEffectRandom() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             int effect = random.nextInt(7);
-            int time = (random.nextInt(8) + 1) * 1200;
+            int time = (random.nextInt(4) + 1) * 1200;
             int level = random.nextInt(4);
 
             switch (effect) {

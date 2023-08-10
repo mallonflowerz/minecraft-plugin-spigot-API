@@ -26,19 +26,19 @@ public class CustomLootTable implements LootTable {
         // Aquí puedes definir los items y sus probabilidades en tu loot table
         probs = new ArrayList<>();
 
-        addLoot(this.probs, Material.TOTEM_OF_UNDYING, 1, 2, 6);
-        addLoot(this.probs, Material.ANCIENT_DEBRIS, 1, 4, 15);
+        addLoot(this.probs, Material.TOTEM_OF_UNDYING, 1, 2, 10);
+        addLoot(this.probs, Material.ANCIENT_DEBRIS, 1, 4, 20);
         addLoot(this.probs, Material.DIAMOND, 1, 15, 30);
-        addLoot(this.probs, Material.NETHERITE_INGOT, 1, 1, 2);
+        addLoot(this.probs, Material.NETHERITE_INGOT, 1, 1, 6);
         addLoot(this.probs, Material.IRON_INGOT, 7, 40, 49);
         addLoot(this.probs, Material.ARROW, 7, 32, 65);
         addLoot(this.probs, Material.GOLD_BLOCK, 1, 5, 20);
         addLoot(this.probs, Material.GOLDEN_APPLE, 2, 11, 68);
         addLoot(this.probs, Material.DIAMOND_BLOCK, 1, 4, 30);
-        addLoot(this.probs, Material.SHULKER_SHELL, 1, 2, 5);
+        addLoot(this.probs, Material.SHULKER_SHELL, 1, 2, 7);
         addLoot(this.probs, Material.GOLD_INGOT, 3, 25, 50);
         addLoot(this.probs, Material.FIREWORK_ROCKET, 6, 32, 60);
-        addLoot(this.probs, Material.ENCHANTED_GOLDEN_APPLE, 1, 1, 3);
+        addLoot(this.probs, Material.ENCHANTED_GOLDEN_APPLE, 1, 1, 5);
     }
 
     @Override

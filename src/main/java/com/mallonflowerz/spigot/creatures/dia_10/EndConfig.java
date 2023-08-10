@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Shulker;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -178,6 +180,5 @@ public class EndConfig implements Listener {
 
         return emptySlotsArray;
     }
-
 
 }
