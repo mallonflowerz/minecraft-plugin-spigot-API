@@ -6,6 +6,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -21,7 +22,7 @@ public class RecipeDia6 {
         this.plugin = plugin;
     }
 
-    public void registerCustomRecipe() {
+    public Recipe registerCustomRecipe() {
         ItemStack customItem = new ItemStack(Material.NETHERITE_HELMET);
         ItemMeta itemMeta = customItem.getItemMeta();
 
@@ -42,10 +43,10 @@ public class RecipeDia6 {
         recipe.setIngredient('D', Material.DIAMOND_BLOCK);
         recipe.setIngredient('E', Material.TOTEM_OF_UNDYING);
 
-        plugin.getServer().addRecipe(recipe);
+        return recipe;
     }
 
-    public void registerCustomBarrierCrafting() {
+    public Recipe registerCustomBarrierCrafting() {
         ItemStack elCleanItem = new ItemStack(Material.BARRIER);
         ItemMeta elCleanMeta = elCleanItem.getItemMeta();
 
@@ -66,7 +67,7 @@ public class RecipeDia6 {
         elClean.setIngredient('B', Material.DIAMOND_BLOCK);
         elClean.setIngredient('C', Material.NETHERITE_INGOT);
 
-        plugin.getServer().addRecipe(elClean);
+        return elClean;
     }
 
     public ItemStack getCustomHelmetItem() {
@@ -97,8 +98,12 @@ public class RecipeDia6 {
     }
 
     public void applyNegativeEffect(Player player) {
-        player.damage(5);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, Integer.MAX_VALUE, 0));
+        if (this.plugin.getDays() >= 12) {
+            player.damage(7);
+        } else {
+            player.damage(5);
+        }
+        player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10, 0));
     }
 
     public void removeNegativeEffect(Player player) {

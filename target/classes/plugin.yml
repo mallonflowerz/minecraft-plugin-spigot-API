@@ -1,4 +1,25 @@
 name: plugin-demo
 main: com.mallonflowerz.spigot.Plugin
 version: 1.0-SNAPSHOT
-api-version: 1.15
+api-version: 1.20
+commands:
+  setday:
+    description: comando para cambiar los dias
+    usage: /<command> <day>
+    permission: plugin.setday
+  getday:
+    description: comando para ver los dias
+    usage: /<command>
+    permission: plugin.getday
+  reto:
+    description: comando general
+    usage: /<command>
+    permission: plugin.reto
+
+permission:
+  plugin.setday:
+    description: Permite cambiar los días usando el comando /setdays
+    default: op
+  plugin.reto:
+    description: general
+    default: op

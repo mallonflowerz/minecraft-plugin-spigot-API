@@ -4,85 +4,62 @@ import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.mallonflowerz.spigot.creatures.dia_10.DragonBattle;
-import com.mallonflowerz.spigot.creatures.dia_10.EndConfig;
-import com.mallonflowerz.spigot.days.Dia_10;
-import com.mallonflowerz.spigot.days.Dia_2;
-import com.mallonflowerz.spigot.days.Dia_4;
-import com.mallonflowerz.spigot.days.Dia_6;
-import com.mallonflowerz.spigot.days.Dia_8;
-import com.mallonflowerz.spigot.items.ChestTop;
-import com.mallonflowerz.spigot.items.RecipeDia10;
-import com.mallonflowerz.spigot.items.RecipeDia6;
+import com.mallonflowerz.spigot.End.EndConfig;
+import com.mallonflowerz.spigot.Listener.Block.BlockEvents;
+import com.mallonflowerz.spigot.Listener.Entity.EntityEvents;
+import com.mallonflowerz.spigot.Listener.Entity.SpawnListener;
+import com.mallonflowerz.spigot.Listener.Entity.TotemConsumeEvent;
+import com.mallonflowerz.spigot.Listener.Player.PlayerEvents;
+import com.mallonflowerz.spigot.Listener.World.WorldEvents;
+import com.mallonflowerz.spigot.Util.RetoCommand;
 
 public class Plugin extends JavaPlugin {
+
   private static final Logger LOGGER = Logger.getLogger("plugin-demo");
 
-  // private final ChestTop chestTop = new ChestTop();
-  // private RecipeDia6 recipeDia6;
-  // private final Dia_6 dia_6 = new Dia_6();
-  // private final Dia_8 dia_8 = new Dia_8();
-  private Dia_10 dia_10;
-  private EndConfig endConfig;
-  private DragonBattle dragonBattle;
-  private RecipeDia10 recipeDia10;
+  private RetoCommand command = new RetoCommand(this);
+
+  private Integer days = 0;
+  private Integer prob = 0;
 
   public void onEnable() {
+    days = getConfig().getInt("days", 0);
+    prob = getConfig().getInt("prob", 0);
     LOGGER.info("PLUGIN DEMO ENABLED");
-    // chestTop.spawnChestWithItemsTop(new
-    // Location(getServer().getWorld(Mundos.WORLD_OVERWORLD), 0, 90, 0));
-    endConfig = new EndConfig(this);
-    dragonBattle = new DragonBattle(this);
-    // Dia 10
-    // dia_10 = new Dia_10(this);
-    // recipeDia10 = new RecipeDia10(this);
-    // recipeDia10.registerGoldenApplePlusRecipe();
-    // recipeDia10.registerGoldenApplePlusMaxRecipe();
-    // recipeDia10.registerShieldOpRecipe();
-    // getServer().getScheduler().runTaskTimer(this, new Runnable() {
-    // @Override
-    // public void run() {
-    // for (Player player : getServer().getOnlinePlayers()) {
-    // dia_10.onRainingAcid(player);
-    // }
-    // }
+    getCommand("reto").setExecutor(command);
+    getServer().getPluginManager().registerEvents(new SpawnListener(this), this);
+    getServer().getPluginManager().registerEvents(new BlockEvents(this), this);
+    getServer().getPluginManager().registerEvents(new EntityEvents(this), this);
+    getServer().getPluginManager().registerEvents(new TotemConsumeEvent(this), this);
+    getServer().getPluginManager().registerEvents(new PlayerEvents(this), this);
+    getServer().getPluginManager().registerEvents(new WorldEvents(this), this);
 
-    // }, 0, 0);
-
-    // Dia 8
-    // dia_8.addEntities();
-    // dia_8.addMobsPasives();
-
-    // Dia 6
-    // getServer().getScheduler().runTaskTimer(this, new Runnable() {
-    // @Override
-    // public void run() {
-    // for (Player player : getServer().getOnlinePlayers()) {
-    // Inventory inventory = player.getInventory();
-    // if (inventory == null) {
-    // return;
-    // }
-    // if (player.getInventory().getHelmet() != null &&
-    // player.getInventory().getHelmet().isSimilar(getCustomHelmetItem())) {
-    // removeNegativeEffect(player);
-    // } else {
-    // applyNegativeEffect(player);
-    // }
-    // if (player.getInventory().contains(getCustomBarrierItem())) {
-    // dia_6.desblockInventory(player);
-    // } else {
-    // dia_6.blockedInventory(player);
-    // }
-    // }
-    // }
-    // }, 0L, 0L);
-    // recipeDia6 = new RecipeDia6(this);
-    // recipeDia6.registerCustomRecipe();
-    // recipeDia6.registerCustomBarrierCrafting();
+    if (days >= 10) {
+      getServer().getPluginManager().registerEvents(new EndConfig(this), this);
+    }
   }
 
   public void onDisable() {
     LOGGER.info("PLUGIN DEMO DISABLED");
+    getConfig().set("days", days);
+    getConfig().set("prob", prob);
+    saveConfig();
+  }
+
+  public Integer getProb() {
+    return prob;
+  }
+
+  public void setProb(Integer prob) {
+    this.prob = prob;
+  }
+
+  public Integer getDays() {
+    return days;
+  }
+
+  public void setDays(Integer days) {
+    this.days = days;
   }
 
 }

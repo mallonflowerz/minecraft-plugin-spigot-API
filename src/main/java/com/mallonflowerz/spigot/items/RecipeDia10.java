@@ -5,6 +5,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -18,7 +19,7 @@ public class RecipeDia10 {
         this.plugin = plugin;
     }
 
-    public void registerGoldenApplePlusRecipe() {
+    public Recipe registerGoldenApplePlusRecipe() {
         ItemStack customItem = new ItemStack(Material.GOLDEN_APPLE);
         ItemMeta itemMeta = customItem.getItemMeta();
 
@@ -35,10 +36,10 @@ public class RecipeDia10 {
         recipe.setIngredient('A', Material.GOLDEN_APPLE);
         recipe.setIngredient('B', Material.DIAMOND);
 
-        plugin.getServer().addRecipe(recipe);
+        return recipe;
     }
 
-    public void registerGoldenApplePlusMaxRecipe() {
+    public Recipe registerGoldenApplePlusMaxRecipe() {
         ItemStack customItem = new ItemStack(Material.GOLDEN_APPLE);
         ItemMeta itemMeta = customItem.getItemMeta();
 
@@ -57,10 +58,10 @@ public class RecipeDia10 {
         recipe.setIngredient('A', Material.GOLDEN_APPLE);
         recipe.setIngredient('B', Material.DIAMOND_BLOCK);
 
-        plugin.getServer().addRecipe(recipe);
+        return recipe;
     }
 
-    public void registerShieldOpRecipe() {
+    public Recipe registerShieldOpRecipe() {
         ItemStack customItem = new ItemStack(Material.SHIELD);
         ItemMeta itemMeta = customItem.getItemMeta();
 
@@ -80,6 +81,6 @@ public class RecipeDia10 {
         recipe.setIngredient('A', Material.OBSIDIAN);
         recipe.setIngredient('B', Material.DIAMOND);
 
-        plugin.getServer().addRecipe(recipe);
+        return recipe;
     }
 }

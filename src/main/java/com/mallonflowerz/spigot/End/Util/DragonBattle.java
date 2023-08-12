@@ -1,5 +1,5 @@
-package com.mallonflowerz.spigot.creatures.dia_10;
- 
+package com.mallonflowerz.spigot.End.Util;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -37,8 +37,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
 import com.mallonflowerz.spigot.Plugin;
+import com.mallonflowerz.spigot.creatures.dia_10.Entities;
 import com.mallonflowerz.spigot.statics.Message;
 import com.mallonflowerz.spigot.statics.Mundos;
 
@@ -142,6 +144,9 @@ public class DragonBattle implements Listener {
         } else if (c == EnderDragon.Phase.BREATH_ATTACK) {
             if (isPhase2 || isPhase3 || isPhase4) {
                 breathAttackLocation = l;
+                if (isPhase3 || isPhase4) {
+                    slowness();
+                }
             }
         } else if (c == EnderDragon.Phase.ROAR_BEFORE_ATTACK) {
             if (isPhase2 || isPhase3 || isPhase4) {
@@ -160,6 +165,7 @@ public class DragonBattle implements Listener {
         } else if (c == EnderDragon.Phase.SEARCH_FOR_BREATH_ATTACK_TARGET) {
             if (isPhase3) {
                 spawnMobsRandom();
+                slowness();
             }
         } else if (c == EnderDragon.Phase.HOVER) {
             if (isPhase2 || isPhase3 || isPhase4) {
@@ -173,6 +179,9 @@ public class DragonBattle implements Listener {
                 tnt.setFuseTicks(60);
                 tnt.setYield(25.0F);
                 tnt.setVisibleByDefault(false);
+                if (isPhase3 || isPhase4) {
+                    slowness();
+                }
             }
             if (isPhase3) {
                 spawnMobsRandom();
@@ -453,6 +462,15 @@ public class DragonBattle implements Listener {
                     countCristal--;
                 }
 
+            }
+        }
+    }
+
+    private void slowness() {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (random.nextInt(100) + 1 <= 40) {
+                player.addPotionEffect(
+                        new PotionEffect(PotionEffectType.SLOW, 100, 255, true, false));
             }
         }
     }
