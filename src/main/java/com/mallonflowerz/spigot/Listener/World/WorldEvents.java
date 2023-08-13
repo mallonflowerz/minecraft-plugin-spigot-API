@@ -12,8 +12,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.mallonflowerz.spigot.Plugin;
+import com.mallonflowerz.spigot.items.DefinitiveArmor;
 import com.mallonflowerz.spigot.items.RecipeDia10;
 import com.mallonflowerz.spigot.items.RecipeDia6;
 
@@ -42,13 +45,13 @@ public class WorldEvents implements Listener {
                         if (inventory == null) {
                             return;
                         }
-                        if (player.getInventory().getHelmet() != null &&
-                                player.getInventory().getHelmet().isSimilar(recipes.getCustomHelmetItem())) {
+                        if (RecipeDia6.isSpaceHelmet(player.getInventory().getHelmet()) ||
+                                DefinitiveArmor.isDefinitivePiece(player.getInventory().getHelmet())) {
                             recipes.removeNegativeEffect(player);
                         } else {
-                            // recipes.applyNegativeEffect(player);
+                            recipes.applyNegativeEffect(player);
                         }
-                        if (player.getInventory().contains(recipes.getCustomBarrierItem())) {
+                        if (RecipeDia6.isClean(player.getInventory())) {
                             desblockInventory(player);
                         } else {
                             blockedInventory(player);
@@ -63,6 +66,27 @@ public class WorldEvents implements Listener {
 
                     if (plugin.getDays() >= 12) {
                         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(16.0);
+                        ItemStack hel = player.getInventory().getHelmet();
+                        ItemStack ches = player.getInventory().getChestplate();
+                        ItemStack legg = player.getInventory().getLeggings();
+                        ItemStack bot = player.getInventory().getBoots();
+
+                        if (DefinitiveArmor.isDefinitivePiece(hel) &&
+                                DefinitiveArmor.isDefinitivePiece(ches) &&
+                                DefinitiveArmor.isDefinitivePiece(legg) &&
+                                DefinitiveArmor.isDefinitivePiece(bot)) {
+                            player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+                                    .setBaseValue(
+                                            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + 2.0);
+                            player.addPotionEffect(
+                                    new PotionEffect(PotionEffectType.ABSORPTION, 100, 0));
+                            player.addPotionEffect(
+                                    new PotionEffect(PotionEffectType.SPEED, 100, 1));
+                            player.addPotionEffect(
+                                    new PotionEffect(PotionEffectType.REGENERATION, 100, 0));
+                            player.addPotionEffect(
+                                    new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 1));
+                        }
                     }
 
                 }
@@ -101,12 +125,20 @@ public class WorldEvents implements Listener {
     }
 
     private void desblockInventory(Player player) {
-        if (player.getInventory().contains(Material.STRUCTURE_VOID)) {
-            player.getInventory().setItem(4, null);
-            player.getInventory().setItem(31, null);
-            player.getInventory().setItem(22, null);
-            player.getInventory().setItem(13, null);
-            player.getInventory().setItem(40, null);
+        Inventory inventory = player.getInventory();
+        ItemStack offHandItem = player.getInventory().getItemInOffHand();
+
+        // Verificar si el ítem de la mano izquierda es el que queremos eliminar
+        if (offHandItem != null && offHandItem.getType() == Material.STRUCTURE_VOID) {
+            player.getInventory().setItemInOffHand(null);
+        }
+
+        // Recorrer el inventario en busca de ocurrencias del ítem a eliminar
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack item = inventory.getItem(i);
+            if (item != null && item.getType() == Material.STRUCTURE_VOID) {
+                inventory.setItem(i, null);
+            }
         }
     }
 

@@ -1,7 +1,11 @@
 package com.mallonflowerz.spigot.Listener.Entity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -16,18 +20,22 @@ import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.Hoglin;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Piglin;
 import org.bukkit.entity.PiglinBrute;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.Warden;
+import org.bukkit.entity.Wither;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -39,6 +47,7 @@ import com.mallonflowerz.spigot.creatures.dia_6.Blazes;
 import com.mallonflowerz.spigot.creatures.dia_6.Creepers;
 import com.mallonflowerz.spigot.creatures.dia_6.Skeletons;
 import com.mallonflowerz.spigot.creatures.dia_6.WitherSkeletons;
+import com.mallonflowerz.spigot.items.DefinitiveArmor;
 import com.mallonflowerz.spigot.statics.Mundos;
 import com.mallonflowerz.spigot.statics.Potions;
 
@@ -56,6 +65,8 @@ public class SpawnListener implements Listener {
             if (event.getEntityType() != EntityType.PLAYER) {
                 LivingEntity entity = event.getEntity();
                 entity.addPotionEffects(Potions.potions());
+            } else if (event.getEntityType() == EntityType.WARDEN && days < 12) {
+                event.setCancelled(true);
             }
         }
 
@@ -257,17 +268,60 @@ public class SpawnListener implements Listener {
                 if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT) {
                     return;
                 }
-
                 Slime slime = (Slime) event.getEntity();
                 slime.setSize(16);
                 slime.setCustomName(ChatColor.GREEN + "Giga Slime Corrosivo");
-
+                slime.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveHelmet());
+                slime.getEquipment().setItemInMainHandDropChance(2.0F);
                 int x = random.nextInt(4) + 1;
 
                 double originalMaxHealth = slime.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
                 double newMaxHealth = originalMaxHealth * x; // Multiplicar por x
 
                 slime.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(newMaxHealth);
+            } else if (event.getEntityType() == EntityType.ZOMBIFIED_PIGLIN &&
+                    mundos.isNether(event.getEntity())) {
+                event.getEntity().getWorld().spawn(event.getLocation(), Piglin.class);
+                event.setCancelled(true);
+            } else if (event.getEntityType() == EntityType.GHAST &&
+                    mundos.isNether(event.getEntity())) {
+                Ghast ghast = (Ghast) event.getEntity();
+                addRandomPotions(ghast);
+                ghast.setCustomName(ChatColor.AQUA + "Ghast Impredecible");
+                ghast.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveChest());
+                ghast.getEquipment().setItemInMainHandDropChance(2.0F);
+
+                int x = random.nextInt(4) + 1;
+                double originalMaxHealth = ghast.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                double newMaxHealth = originalMaxHealth * x;
+                ghast.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(newMaxHealth);
+            } else if (event.getEntityType() == EntityType.CREEPER &&
+                    mundos.isOverworld(event.getEntity())) {
+                if (event.getEntity().getCustomName() == null) {
+                    Creeper creeper = (Creeper) event.getEntity();
+                    creeper.setPowered(true);
+                    creeper.setInvisible(true);
+                }
+            } else if (event.getEntityType() == EntityType.WARDEN &&
+                    mundos.isOverworld(event.getEntity())) {
+                Warden warden = (Warden) event.getEntity();
+                warden.addPotionEffect(
+                        new PotionEffect(PotionEffectType.REGENERATION, -1, 1));
+                warden.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveLeggings());
+                warden.getEquipment().setItemInMainHandDropChance(2.0F);
+                if (random.nextInt(100) + 1 <= 20) {
+                    Wither wither = (Wither) warden.getWorld()
+                            .spawnEntity(warden.getLocation(), EntityType.WITHER);
+                    wither.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveLeggings());
+                    wither.getEquipment().setItemInMainHandDropChance(2.0F);
+                }
+            } else if (event.getEntityType() == EntityType.HOGLIN &&
+                    mundos.isNether(event.getEntity()) && days < 14) {
+                Hoglin hoglin = (Hoglin) event.getEntity();
+                hoglin.addPotionEffect(
+                        new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, -1, 1));
+                hoglin.getEquipment().setItemInMainHand(new ItemStack(Material.GOLDEN_APPLE, random.nextInt(4)));
+                hoglin.getEquipment().setItemInMainHandDropChance(1.0F);
             }
         }
         // Dia 14
@@ -311,6 +365,28 @@ public class SpawnListener implements Listener {
             PotionEffectType effectType = effects[random.nextInt(effects.length)];
             int effectDuration = Integer.MAX_VALUE;
             int effectLevel = random.nextInt(4) + 1; // Nivel entre 1 y 4
+
+            PotionEffect potionEffect = new PotionEffect(effectType, effectDuration, effectLevel);
+            entity.addPotionEffect(potionEffect);
+        }
+    }
+
+    private void addRandomPotions(LivingEntity entity) {
+        PotionEffectType[] effects = {
+                PotionEffectType.REGENERATION,
+                PotionEffectType.DAMAGE_RESISTANCE,
+                PotionEffectType.GLOWING,
+                PotionEffectType.HEALTH_BOOST,
+                PotionEffectType.INCREASE_DAMAGE
+        };
+
+        int maxEffects = 5; // Máximo número de efectos que pueden aplicarse
+        int numEffects = random.nextInt(maxEffects) + 1; // Número aleatorio de efectos a aplicar
+
+        for (int i = 0; i < numEffects; i++) {
+            PotionEffectType effectType = effects[random.nextInt(effects.length)];
+            int effectDuration = random.nextInt(180) + 1 * 1200;
+            int effectLevel = random.nextInt(5) + 1; // Nivel entre 1 y 5
 
             PotionEffect potionEffect = new PotionEffect(effectType, effectDuration, effectLevel);
             entity.addPotionEffect(potionEffect);

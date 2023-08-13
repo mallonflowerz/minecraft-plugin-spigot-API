@@ -49,7 +49,7 @@ public class PlayerEvents implements Listener {
         Location from = event.getFrom();
         Location to = event.getTo();
 
-        if (days >= 8) {
+        if (days >= 8 && days < 10) {
             if (!player.isInsideVehicle()) {
                 if (to != null && new Random().nextDouble() < 0.2 &&
                         (from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ())) {
@@ -67,7 +67,6 @@ public class PlayerEvents implements Listener {
                 block.setType(Material.AIR);
             }
         }
-
     }
 
     @EventHandler
@@ -178,6 +177,14 @@ public class PlayerEvents implements Listener {
             }
         }
 
+        if (days >= 12) {
+            if (event.getItem().getType() == Material.PUMPKIN_PIE && days < 14) {
+                Player player = (Player) event.getPlayer();
+                player.addPotionEffect(
+                        new PotionEffect(PotionEffectType.SATURATION, 200, 1));
+            }
+        }
+
     }
 
     @EventHandler
@@ -198,13 +205,11 @@ public class PlayerEvents implements Listener {
     @EventHandler
     public void onPlayerBucket(PlayerBucketFillEvent event) {
         Integer days = plugin.getDays();
-        System.out.println("HELLOO");
         if (days >= 12) {
             if (event.getBlockClicked().getType() == Material.WATER) {
-
                 // El jugador recogió agua en un cubo
                 event.setCancelled(true);
-            } else if (event.getBucket() == Material.LAVA_BUCKET) {
+            } else if (event.getBlockClicked().getType() == Material.LAVA) {
                 // El jugador recogió lava en un cubo
                 event.setCancelled(true);
             }

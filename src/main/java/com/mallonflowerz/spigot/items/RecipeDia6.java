@@ -1,9 +1,11 @@
 package com.mallonflowerz.spigot.items;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -27,7 +29,7 @@ public class RecipeDia6 {
         ItemMeta itemMeta = customItem.getItemMeta();
 
         itemMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 5, true);
-        itemMeta.setDisplayName("\u00A7r\u00A76Space Helmet");
+        itemMeta.setDisplayName(ChatColor.GREEN + "Space Helmet");
         itemMeta.setLore(null);
 
         customItem.setItemMeta(itemMeta);
@@ -50,11 +52,11 @@ public class RecipeDia6 {
         ItemStack elCleanItem = new ItemStack(Material.BARRIER);
         ItemMeta elCleanMeta = elCleanItem.getItemMeta();
 
-        elCleanMeta.addEnchant(Enchantment.DURABILITY, 1, false);
+        elCleanMeta.addEnchant(Enchantment.DURABILITY, 7, true);
         elCleanMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        elCleanMeta.setCustomModelData(Integer.valueOf(1));
 
-        elCleanMeta.setDisplayName("\u00A79El Clean");
-        elCleanMeta.setLore(null);
+        elCleanMeta.setDisplayName(ChatColor.AQUA + "El Clean");
 
         elCleanItem.setItemMeta(elCleanMeta);
 
@@ -70,33 +72,6 @@ public class RecipeDia6 {
         return elClean;
     }
 
-    public ItemStack getCustomHelmetItem() {
-        ItemStack customItem = new ItemStack(Material.NETHERITE_HELMET);
-        ItemMeta itemMeta = customItem.getItemMeta();
-
-        itemMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 5, true);
-        itemMeta.setDisplayName("\u00A7r\u00A76Space Helmet");
-        itemMeta.setLore(null);
-
-        customItem.setItemMeta(itemMeta);
-        return customItem;
-    }
-
-    public ItemStack getCustomBarrierItem() {
-        ItemStack elCleanItem = new ItemStack(Material.BARRIER);
-        ItemMeta elCleanMeta = elCleanItem.getItemMeta();
-
-        elCleanMeta.addEnchant(Enchantment.DURABILITY, 1, false);
-        elCleanMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
-        elCleanMeta.setDisplayName("\u00A79El Clean");
-        elCleanMeta.setLore(null);
-
-        elCleanItem.setItemMeta(elCleanMeta);
-
-        return elCleanItem;
-    }
-
     public void applyNegativeEffect(Player player) {
         if (this.plugin.getDays() >= 12) {
             player.damage(7);
@@ -108,5 +83,38 @@ public class RecipeDia6 {
 
     public void removeNegativeEffect(Player player) {
         player.removePotionEffect(PotionEffectType.POISON);
+    }
+
+    public static boolean isSpaceHelmet(ItemStack i) {
+        if (i == null)
+            return false;
+
+        if (i.hasItemMeta()) {
+            if (ChatColor.stripColor(i.getItemMeta().getDisplayName()).startsWith("Space") &&
+                    i.getItemMeta().getEnchants().containsKey(Enchantment.PROTECTION_ENVIRONMENTAL) &&
+                    i.getItemMeta().getEnchants().containsValue(5)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isClean(Inventory s) {
+        if (s == null)
+            return false;
+
+        for (ItemStack i : s) {
+            if (i != null) {
+                if (i.hasItemMeta()) {
+                    if (ChatColor.stripColor(i.getItemMeta().getDisplayName()).endsWith("Clean") &&
+                            i.getItemMeta().getEnchants().containsKey(Enchantment.DURABILITY) &&
+                            i.getItemMeta().getEnchants().containsValue(7) &&
+                            i.getItemMeta().getItemFlags().contains(ItemFlag.HIDE_ENCHANTS)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

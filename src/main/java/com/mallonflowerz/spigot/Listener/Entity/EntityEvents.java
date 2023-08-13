@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -16,13 +17,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Pillager;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Warden;
 import org.bukkit.entity.Witch;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
@@ -224,6 +225,8 @@ public class EntityEvents implements Listener {
                     case 1:
                         Creeper creeper = (Creeper) event.getEntity().getWorld().spawnEntity(location,
                                 EntityType.CREEPER);
+                        creeper.setCustomName("CreeperForSlime");
+                        creeper.setCustomNameVisible(false);
                         creeper.setTarget(player);
                         break;
                     case 2:
@@ -249,6 +252,23 @@ public class EntityEvents implements Listener {
                     if (random.nextInt(100) + 1 <= 40) {
                         player.getWorld().strikeLightning(player.getLocation());
                     }
+                }
+            } else if (event.getDamager().getType() == EntityType.FIREBALL &&
+                    event.getEntityType() == EntityType.PLAYER && mundos.isNether(event.getDamager())) {
+                Ghast ghast = (Ghast) ((Projectile) event.getDamager()).getShooter();
+                Player player = (Player) event.getEntity();
+                if (ghast != null) {
+                    applyRandomEffect(player);
+                }
+            } else if (event.getDamager().getType() == EntityType.WARDEN &&
+                    mundos.isOverworld(event.getDamager())) {
+                Player player = (Player) event.getEntity();
+                player.addPotionEffect(
+                        new PotionEffect(PotionEffectType.WITHER, 200, 6));
+            } else if (event.getDamager().getType() == EntityType.ARROW &&
+                    event.getEntityType() == EntityType.WARDEN) {
+                if (random.nextInt(100) + 1 >= 50) {
+                    event.setCancelled(true);
                 }
             }
         }
@@ -316,6 +336,16 @@ public class EntityEvents implements Listener {
         }
 
         if (days >= 12) {
+            if (event.getEntityType() == EntityType.SKELETON && mundos.isOverworld(event.getEntity()) &&
+                    event.getEntity().getCustomName() != null &&
+                    event.getEntity().getCustomName().equals("Skeleton Level 4+")) {
+                if (random.nextInt(100) + 1 <= 10) {
+                    event.getDrops().add(new ItemStack(Material.ENCHANTED_GOLDEN_APPLE));
+                }
+                event.getDrops().add(new ItemStack(Material.DIAMOND, random.nextInt(10)));
+            } else if (event.getEntityType() == EntityType.SKELETON && mundos.isOverworld(event.getEntity())) {
+                event.getDrops().add(new ItemStack(Material.DIAMOND, random.nextInt(10)));
+            }
         }
     }
 
@@ -365,15 +395,24 @@ public class EntityEvents implements Listener {
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player
                 && event.getProjectile() instanceof Arrow) {
-            Player entity = (Player) event.getEntity();
+            Player player = (Player) event.getEntity();
 
             // Verificar si el jugador está usando una ballesta
-            if (entity.getEquipment().getItemInMainHand().getType().toString().contains("CROSSBOW")) {
+            if (player.getEquipment().getItemInMainHand().getType().toString().contains("CROSSBOW")) {
                 Arrow arrow = (Arrow) event.getProjectile();
 
                 // Aplicar el multiplicador de daño (x3)
                 double newDamage = arrow.getDamage() * 3;
                 arrow.setDamage(newDamage);
+            }
+        } else if (event.getEntityType() == EntityType.WARDEN) {
+            Warden warden = (Warden) event.getEntity();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.getLocation().distance(warden.getLocation()) < 100.0) {
+                    TNTPrimed tnt = player.getWorld().spawn(player.getLocation(), TNTPrimed.class);
+                    tnt.setFuseTicks(0);
+                    tnt.setVisibleByDefault(false);
+                }
             }
         }
     }
@@ -390,5 +429,29 @@ public class EntityEvents implements Listener {
             }
         }
         return randomItem;
+    }
+
+    private void applyRandomEffect(LivingEntity entity) {
+        PotionEffectType[] effects = {
+                PotionEffectType.POISON,
+                PotionEffectType.WITHER,
+                PotionEffectType.SLOW,
+                PotionEffectType.LEVITATION,
+                PotionEffectType.BAD_OMEN,
+        };
+
+        int maxEffects = 5; // Máximo número de efectos que pueden aplicarse
+        int numEffects = random.nextInt(maxEffects) + 1; // Número aleatorio de efectos a aplicar
+
+        for (int i = 0; i < numEffects; i++) {
+            PotionEffectType effectType = effects[random.nextInt(effects.length)];
+            double damage = random.nextInt(40) + 1;
+            int effectDuration = random.nextInt(5) + 1 * 1200;
+            int effectLevel = random.nextInt(5) + 1; // Nivel entre 1 y 5
+
+            PotionEffect potionEffect = new PotionEffect(effectType, effectDuration, effectLevel);
+            entity.addPotionEffect(potionEffect);
+            entity.damage(damage);
+        }
     }
 }

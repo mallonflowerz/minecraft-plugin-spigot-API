@@ -1,3 +1,4 @@
+com\mallonflowerz\spigot\Util\RetoCommand.class
 com\mallonflowerz\spigot\creatures\dia_10\Entities.class
 com\mallonflowerz\spigot\Listener\Entity\SpawnListener.class
 com\mallonflowerz\spigot\Listener\Player\PlayerEvents.class
