@@ -1,5 +1,6 @@
 com\mallonflowerz\spigot\Util\RetoCommand.class
 com\mallonflowerz\spigot\creatures\dia_10\Entities.class
+com\mallonflowerz\spigot\items\DefinitiveArmor.class
 com\mallonflowerz\spigot\Listener\Entity\SpawnListener.class
 com\mallonflowerz\spigot\Listener\Player\PlayerEvents.class
 com\mallonflowerz\spigot\creatures\dia_6\WitherSkeletons.class
@@ -19,6 +20,7 @@ com\mallonflowerz\spigot\creatures\dia_6\Skeletons.class
 com\mallonflowerz\spigot\creatures\dia_4\Spiders.class
 com\mallonflowerz\spigot\statics\Potions.class
 com\mallonflowerz\spigot\creatures\dia_10\SkeletonsLevelUp.class
+com\mallonflowerz\spigot\End\EndConfig$1.class
 com\mallonflowerz\spigot\Listener\Entity\EntityEvents.class
 com\mallonflowerz\spigot\items\ChestTop.class
 com\mallonflowerz\spigot\items\RecipeDia6.class

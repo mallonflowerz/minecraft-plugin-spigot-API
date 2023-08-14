@@ -265,10 +265,12 @@ public class SpawnListener implements Listener {
         // Dia 12
         if (days >= 12) {
             if (event.getEntityType() == EntityType.SLIME) {
+                Slime slime = (Slime) event.getEntity();
                 if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT) {
+                    slime.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveHelmet());
+                    slime.getEquipment().setItemInMainHandDropChance(2.0F);
                     return;
                 }
-                Slime slime = (Slime) event.getEntity();
                 slime.setSize(16);
                 slime.setCustomName(ChatColor.GREEN + "Giga Slime Corrosivo");
                 slime.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveHelmet());

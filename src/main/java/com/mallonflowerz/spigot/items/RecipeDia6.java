@@ -30,6 +30,7 @@ public class RecipeDia6 {
 
         itemMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 5, true);
         itemMeta.setDisplayName(ChatColor.GREEN + "Space Helmet");
+        itemMeta.setCustomModelData(1);
         itemMeta.setLore(null);
 
         customItem.setItemMeta(itemMeta);
@@ -54,7 +55,7 @@ public class RecipeDia6 {
 
         elCleanMeta.addEnchant(Enchantment.DURABILITY, 7, true);
         elCleanMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        elCleanMeta.setCustomModelData(Integer.valueOf(1));
+        elCleanMeta.setCustomModelData(1);
 
         elCleanMeta.setDisplayName(ChatColor.AQUA + "El Clean");
 

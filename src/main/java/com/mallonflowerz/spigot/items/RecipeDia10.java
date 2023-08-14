@@ -24,6 +24,7 @@ public class RecipeDia10 {
         ItemMeta itemMeta = customItem.getItemMeta();
 
         itemMeta.setDisplayName("\u00A76\u00A7lGolden Apple\u00A75\u00A7l+");
+        itemMeta.setCustomModelData(1);
         itemMeta.setLore(null);
 
         customItem.setItemMeta(itemMeta);
@@ -46,6 +47,7 @@ public class RecipeDia10 {
         itemMeta.setDisplayName("\u00A76\u00A7lGolden Apple\u00A75\u00A7l+ Max");
         itemMeta.addEnchant(Enchantment.DURABILITY, 1, true);
         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        itemMeta.setCustomModelData(1);
         itemMeta.setLore(null);
 
         customItem.setItemMeta(itemMeta);

@@ -3,8 +3,11 @@ package com.mallonflowerz.spigot.Util;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.mallonflowerz.spigot.Plugin;
+import com.mallonflowerz.spigot.items.DefinitiveArmor;
+import com.mallonflowerz.spigot.items.UpgradeNetherite;
 
 public class RetoCommand implements CommandExecutor {
 
@@ -42,8 +45,24 @@ public class RetoCommand implements CommandExecutor {
             Integer day = plugin.getDays();
             sender.sendMessage("El dia del plugin es: " + day);
             return true;
+        } else if (args[0].equalsIgnoreCase("armorDefinitive")) {
+            Player player = plugin.getServer().getPlayer(args[1].toString());
+            player.getInventory().addItem(DefinitiveArmor.craftDefinitiveBoots(),
+                    DefinitiveArmor.craftDefinitiveChest(),
+                    DefinitiveArmor.craftDefinitiveHelmet(),
+                    DefinitiveArmor.craftDefinitiveLeggings());
+            sender.sendMessage("Armadura Definitiva dada a: " + player.getName());
+            return true;
+        } else if (args[0].equalsIgnoreCase("herramientasop")) {
+            Player player = plugin.getServer().getPlayer(args[1].toString());
+            player.getInventory().addItem(UpgradeNetherite.craftAxe(),
+                    UpgradeNetherite.craftShovel(),
+                    UpgradeNetherite.craftSword(),
+                    UpgradeNetherite.craftHoe(),
+                    UpgradeNetherite.craftPickaxe());
+            sender.sendMessage("Herramientas dada a: " + player.getName());
+            return true;
         }
         return false;
     }
-
 }

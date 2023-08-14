@@ -46,7 +46,9 @@ public class BlockEvents implements Listener {
                     itemsBlocked.contains(block.getType())) {
                 event.setCancelled(true);
             } else {
-                player.damage(1);
+                //if (days >= 14 && ){
+                    player.damage(1);
+                //}
             }
         }
 

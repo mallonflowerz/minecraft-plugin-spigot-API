@@ -13,12 +13,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class DefinitiveArmor {
 
     public static ItemStack craftDefinitiveHelmet() {
-        ItemStack item = new ItemStack(Material.NETHERITE_HELMET);
+        ItemStack item = new ItemStack(Material.DIAMOND_HELMET);
 
         EquipmentSlot slot = EquipmentSlot.HEAD;
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.DARK_BLUE + "Definitive Helmet");
+        meta.setDisplayName(ChatColor.DARK_PURPLE + "Definitive Helmet");
+        meta.setCustomModelData(2);
         meta.setUnbreakable(true);
 
         AttributeModifier modifier = new AttributeModifier(UUID.randomUUID(), "generic.armor", 4.0D,
@@ -29,7 +30,7 @@ public class DefinitiveArmor {
                 AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, modifier2);
 
-        AttributeModifier modifier3 = new AttributeModifier(UUID.randomUUID(), "generic.knockbackResistance", 3.0D,
+        AttributeModifier modifier3 = new AttributeModifier(UUID.randomUUID(), "generic.knockbackResistance", 0.3D,
                 AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, modifier3);
 
@@ -39,10 +40,11 @@ public class DefinitiveArmor {
     }
 
     public static ItemStack craftDefinitiveChest() {
-        ItemStack item = new ItemStack(Material.NETHERITE_CHESTPLATE);
+        ItemStack item = new ItemStack(Material.DIAMOND_CHESTPLATE);
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.DARK_BLUE + "Definitive Chestplate");
+        meta.setDisplayName(ChatColor.DARK_PURPLE + "Definitive Chestplate");
+        meta.setCustomModelData(2);
         meta.setUnbreakable(true);
 
         EquipmentSlot slot = EquipmentSlot.CHEST;
@@ -55,7 +57,7 @@ public class DefinitiveArmor {
                 AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, modifier2);
 
-        AttributeModifier modifier3 = new AttributeModifier(UUID.randomUUID(), "generic.knockbackResistance", 3.0D,
+        AttributeModifier modifier3 = new AttributeModifier(UUID.randomUUID(), "generic.knockbackResistance", 0.3D,
                 AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, modifier3);
         item.setItemMeta(meta);
@@ -64,10 +66,11 @@ public class DefinitiveArmor {
     }
 
     public static ItemStack craftDefinitiveLeggings() {
-        ItemStack item = new ItemStack(Material.NETHERITE_LEGGINGS);
+        ItemStack item = new ItemStack(Material.DIAMOND_LEGGINGS);
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.DARK_BLUE + "Definitive Leggings");
+        meta.setDisplayName(ChatColor.DARK_PURPLE + "Definitive Leggings");
+        meta.setCustomModelData(2);
         meta.setUnbreakable(true);
 
         EquipmentSlot slot = EquipmentSlot.LEGS;
@@ -80,7 +83,7 @@ public class DefinitiveArmor {
                 AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, modifier2);
 
-        AttributeModifier modifier3 = new AttributeModifier(UUID.randomUUID(), "generic.knockbackResistance", 3.0D,
+        AttributeModifier modifier3 = new AttributeModifier(UUID.randomUUID(), "generic.knockbackResistance", 0.3D,
                 AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, modifier3);
 
@@ -90,10 +93,11 @@ public class DefinitiveArmor {
     }
 
     public static ItemStack craftDefinitiveBoots() {
-        ItemStack item = new ItemStack(Material.NETHERITE_BOOTS);
+        ItemStack item = new ItemStack(Material.DIAMOND_BOOTS);
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.DARK_BLUE + "Definitive Boots");
+        meta.setDisplayName(ChatColor.DARK_PURPLE + "Definitive Boots");
+        meta.setCustomModelData(2);
         meta.setUnbreakable(true);
 
         EquipmentSlot slot = EquipmentSlot.FEET;
@@ -106,7 +110,7 @@ public class DefinitiveArmor {
                 AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_ARMOR_TOUGHNESS, modifier2);
 
-        AttributeModifier modifier3 = new AttributeModifier(UUID.randomUUID(), "generic.knockbackResistance", 3.0D,
+        AttributeModifier modifier3 = new AttributeModifier(UUID.randomUUID(), "generic.knockbackResistance", 0.3D,
                 AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, modifier3);
 

@@ -12,12 +12,14 @@ import com.mallonflowerz.spigot.Listener.Entity.TotemConsumeEvent;
 import com.mallonflowerz.spigot.Listener.Player.PlayerEvents;
 import com.mallonflowerz.spigot.Listener.World.WorldEvents;
 import com.mallonflowerz.spigot.Util.RetoCommand;
+import com.mallonflowerz.spigot.items.UpgradeNetherite;
 
 public class Plugin extends JavaPlugin {
 
   private static final Logger LOGGER = Logger.getLogger("plugin-demo");
 
   private RetoCommand command = new RetoCommand(this);
+  private UpgradeNetherite netherite = new UpgradeNetherite(this);
 
   private Integer days = 0;
   private Integer prob = 0;
@@ -36,6 +38,14 @@ public class Plugin extends JavaPlugin {
 
     if (days >= 10) {
       getServer().getPluginManager().registerEvents(new EndConfig(this), this);
+    }
+
+    if (days >= 14) {
+      getServer().addRecipe(netherite.registerHoe());
+      getServer().addRecipe(netherite.registerShovel());
+      getServer().addRecipe(netherite.registerSword());
+      getServer().addRecipe(netherite.registerPickaxe());
+      getServer().addRecipe(netherite.registerAxe());
     }
   }
 
