@@ -7,12 +7,14 @@ import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
+import org.bukkit.entity.Endermite;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
@@ -29,6 +31,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
@@ -274,7 +277,33 @@ public class EntityEvents implements Listener {
         }
 
         if (days >= 14) {
-
+            if (event.getDamager().getType() == EntityType.ARROW) {
+                Arrow arrow = (Arrow) event.getDamager();
+                if (arrow.hasCustomEffect(PotionEffectType.GLOWING)) {
+                    event.setDamage(event.getDamage() * 2);
+                }
+                if (event.getEntityType() == EntityType.MAGMA_CUBE && mundos.isNether(event.getEntity())) {
+                    Player player = (Player) ((Projectile) event.getDamager()).getShooter();
+                    if (player != null) {
+                        event.setCancelled(true);
+                        player.getWorld().strikeLightning(player.getLocation());
+                        player.damage(event.getDamage());
+                    }
+                }
+            } else if (event.getDamager().getType() == EntityType.PHANTOM && mundos.isOverworld(event.getDamager())) {
+                Endermite endermite = event.getEntity().getWorld().spawn(event.getEntity().getLocation(),
+                        Endermite.class);
+                endermite.addPotionEffect(
+                        new PotionEffect(PotionEffectType.INCREASE_DAMAGE, -1, 1, true, false));
+            } else if (event.getDamager().getType() == EntityType.CAVE_SPIDER &&
+                    event.getEntityType() == EntityType.PLAYER && event.getDamager().getCustomName() != null &&
+                    ChatColor.stripColor(event.getDamager().getCustomName()).equals("Cave Spider OP")) {
+                Location location = event.getEntity().getLocation();
+                event.setDamage(3);
+                location.getBlock().setType(Material.COBWEB);
+                location.setY(location.getY() + 1);
+                location.getBlock().setType(Material.COBWEB);
+            }
         }
     }
 
@@ -289,7 +318,6 @@ public class EntityEvents implements Listener {
             creeper.removePotionEffect(PotionEffectType.REGENERATION);
             creeper.removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
         }
-
     }
 
     @EventHandler
@@ -358,7 +386,6 @@ public class EntityEvents implements Listener {
                 event.setCancelled(true);
             }
         }
-
     }
 
     @EventHandler
@@ -370,7 +397,16 @@ public class EntityEvents implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
 
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        Integer days = plugin.getDays();
+        if (days >= 14) {
+            if (event.getCause() == EntityDamageEvent.DamageCause.LAVA && event.getEntityType() == EntityType.PLAYER) {
+                event.setDamage(6.0);
+            }
+        }
     }
 
     @EventHandler

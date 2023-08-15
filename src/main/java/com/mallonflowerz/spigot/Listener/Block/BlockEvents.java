@@ -6,20 +6,24 @@ import java.util.Random;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.mallonflowerz.spigot.Plugin;
 import com.mallonflowerz.spigot.Listener.Player.PlayerEvents;
+import com.mallonflowerz.spigot.items.UpgradeNetherite;
 
 public class BlockEvents implements Listener {
 
     private Plugin plugin;
     private PlayerEvents bed;
+    private final Random random = new Random();
 
     public BlockEvents(Plugin plugin) {
         this.plugin = plugin;
@@ -44,11 +48,51 @@ public class BlockEvents implements Listener {
         if (days >= 10) {
             if (player.getLocation().getWorld().getTime() < 13000 &&
                     itemsBlocked.contains(block.getType())) {
-                event.setCancelled(true);
+                if (days >= 14) {
+                    if (!UpgradeNetherite.hasTool(player.getInventory().getItemInMainHand())) {
+                        event.setCancelled(true);
+                    }
+                } else {
+                    event.setCancelled(true);
+                }
+            }
+            if (days >= 14) {
+                if (player.getInventory().getItemInMainHand() == null){
+                    player.damage(199);
+                }
+                if (!UpgradeNetherite.hasTool(player.getInventory().getItemInMainHand())) {
+                    player.damage(4);
+                }
             } else {
-                //if (days >= 14 && ){
-                    player.damage(1);
-                //}
+                player.damage(1);
+            }
+
+        }
+
+        if (days >= 14) {
+            if (player.getInventory().getItemInMainHand() != null && block.getType() == Material.ANCIENT_DEBRIS) {
+                ItemStack item = player.getInventory().getItemInMainHand();
+                if (item.hasItemMeta()) {
+                    if (item.getEnchantments().containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
+                        if (item.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) == 1) {
+                            if (random.nextInt(100) + 1 <= 20) {
+                                ItemStack ancient = new ItemStack(Material.ANCIENT_DEBRIS, random.nextInt(1) + 1);
+                                block.getDrops().add(ancient);
+                            }
+                        } else if (item.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) == 2) {
+                            if (random.nextInt(100) + 1 <= 40) {
+                                ItemStack ancient = new ItemStack(Material.ANCIENT_DEBRIS, random.nextInt(2) + 1);
+                                block.getDrops().add(ancient);
+                            }
+                        } else if (item.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) == 3) {
+                            if (random.nextInt(100) + 1 <= 60) {
+                                ItemStack ancient = new ItemStack(Material.ANCIENT_DEBRIS, random.nextInt(3) + 1);
+                                block.getDrops().add(ancient);
+                            }
+                        }
+
+                    }
+                }
             }
         }
 

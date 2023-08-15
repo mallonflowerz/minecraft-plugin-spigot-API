@@ -12,6 +12,7 @@ import com.mallonflowerz.spigot.Listener.Entity.TotemConsumeEvent;
 import com.mallonflowerz.spigot.Listener.Player.PlayerEvents;
 import com.mallonflowerz.spigot.Listener.World.WorldEvents;
 import com.mallonflowerz.spigot.Util.RetoCommand;
+import com.mallonflowerz.spigot.items.DiamondApple;
 import com.mallonflowerz.spigot.items.UpgradeNetherite;
 
 public class Plugin extends JavaPlugin {
@@ -20,6 +21,7 @@ public class Plugin extends JavaPlugin {
 
   private RetoCommand command = new RetoCommand(this);
   private UpgradeNetherite netherite = new UpgradeNetherite(this);
+  private DiamondApple apple = new DiamondApple(this);
 
   private Integer days = 0;
   private Integer prob = 0;
@@ -46,6 +48,7 @@ public class Plugin extends JavaPlugin {
       getServer().addRecipe(netherite.registerSword());
       getServer().addRecipe(netherite.registerPickaxe());
       getServer().addRecipe(netherite.registerAxe());
+      getServer().addRecipe(apple.registerRecipeDiamondApple());
     }
   }
 

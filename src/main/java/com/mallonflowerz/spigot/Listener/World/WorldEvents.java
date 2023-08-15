@@ -36,8 +36,6 @@ public class WorldEvents implements Listener {
         plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
             @Override
             public void run() {
-                addMobsPasives();
-                addEntities();
                 for (Player player : plugin.getServer().getOnlinePlayers()) {
 
                     if (plugin.getDays() >= 6) {
@@ -77,18 +75,22 @@ public class WorldEvents implements Listener {
                                 DefinitiveArmor.isDefinitivePiece(bot)) {
                             player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
                                     .setBaseValue(
-                                            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + 2.0);
+                                            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + 4.0);
                             player.addPotionEffect(
-                                    new PotionEffect(PotionEffectType.ABSORPTION, 100, 0));
+                                    new PotionEffect(PotionEffectType.SPEED, 20, 0));
                             player.addPotionEffect(
-                                    new PotionEffect(PotionEffectType.SPEED, 100, 1));
+                                    new PotionEffect(PotionEffectType.REGENERATION, 20, 0));
                             player.addPotionEffect(
-                                    new PotionEffect(PotionEffectType.REGENERATION, 100, 0));
-                            player.addPotionEffect(
-                                    new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 1));
+                                    new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20, 0));
                         }
                     }
 
+                    if (plugin.getDays() >= 14) {
+                        if (player.isInWater()) {
+                            player.addPotionEffect(
+                                    new PotionEffect(PotionEffectType.SLOW, 10, 29, true, false));
+                        }
+                    }
                 }
             }
         }, 0L, 0L);
@@ -99,9 +101,13 @@ public class WorldEvents implements Listener {
         }
 
         if (plugin.getDays() >= 8) {
-            plugin.getServer().addRecipe(recipesDay10.registerGoldenApplePlusMaxRecipe());
-            plugin.getServer().addRecipe(recipesDay10.registerGoldenApplePlusRecipe());
+            if (plugin.getDays() <= 14) {
+                plugin.getServer().addRecipe(recipesDay10.registerGoldenApplePlusMaxRecipe());
+                plugin.getServer().addRecipe(recipesDay10.registerGoldenApplePlusRecipe());
+            }
             plugin.getServer().addRecipe(recipesDay10.registerShieldOpRecipe());
+            addMobsPasives();
+            addEntities();
         }
 
     }

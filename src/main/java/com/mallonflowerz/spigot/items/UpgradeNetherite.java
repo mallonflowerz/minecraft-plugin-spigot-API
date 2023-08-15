@@ -183,4 +183,16 @@ public class UpgradeNetherite {
         return recipe;
     }
 
+    public static boolean hasTool(ItemStack i) {
+        if (i == null)
+            return false;
+
+        if (i.hasItemMeta()) {
+            if (i.getItemMeta().getCustomModelData() == 1
+                    && ChatColor.stripColor(i.getItemMeta().getDisplayName()).endsWith("+")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

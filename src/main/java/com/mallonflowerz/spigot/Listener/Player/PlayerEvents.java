@@ -24,11 +24,14 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.mallonflowerz.spigot.Plugin;
+import com.mallonflowerz.spigot.items.DiamondApple;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -146,6 +149,7 @@ public class PlayerEvents implements Listener {
     @EventHandler
     public void onItemConsume(PlayerItemConsumeEvent event) {
         Integer days = plugin.getDays();
+        Player player = (Player) event.getPlayer();
 
         if (days >= 8) {
             if (event.getItem().getType().equals(Material.MILK_BUCKET)) {
@@ -157,7 +161,6 @@ public class PlayerEvents implements Listener {
             if (event.getItem().getType() == Material.GOLDEN_APPLE &&
                     event.getItem().getItemMeta().getDisplayName()
                             .equals("\u00A76\u00A7lGolden Apple\u00A75\u00A7l+")) {
-                Player player = (Player) event.getPlayer();
                 player.addPotionEffect(
                         new PotionEffect(PotionEffectType.HEALTH_BOOST, 24000, 1));
                 player.addPotionEffect(
@@ -165,7 +168,6 @@ public class PlayerEvents implements Listener {
             } else if (event.getItem().getType() == Material.GOLDEN_APPLE &&
                     event.getItem().getItemMeta().getDisplayName()
                             .equals("\u00A76\u00A7lGolden Apple\u00A75\u00A7l+ Max")) {
-                Player player = (Player) event.getPlayer();
                 player.addPotionEffect(
                         new PotionEffect(PotionEffectType.HEALTH_BOOST, -1, 1));
                 player.addPotionEffect(
@@ -179,9 +181,18 @@ public class PlayerEvents implements Listener {
 
         if (days >= 12) {
             if (event.getItem().getType() == Material.PUMPKIN_PIE && days < 14) {
-                Player player = (Player) event.getPlayer();
                 player.addPotionEffect(
                         new PotionEffect(PotionEffectType.SATURATION, 200, 1));
+            }
+        }
+
+        if (days >= 14) {
+            if (event.getItem().getType() == Material.GOLDEN_APPLE &&
+                    DiamondApple.hasDiamondApple(event.getItem())) {
+                player.addPotionEffect(
+                        new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 3 * 1200, 3));
+                player.addPotionEffect(
+                        new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 3 * 1200, 1));
             }
         }
 
@@ -214,7 +225,16 @@ public class PlayerEvents implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
 
+    @EventHandler
+    public void onPlayerPortal(PlayerPortalEvent event) {
+        Integer days = plugin.getDays();
+        if (days >= 14) {
+            if (event.getCause() == TeleportCause.END_PORTAL) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     public final List<Material> bedTypes = Arrays.asList(

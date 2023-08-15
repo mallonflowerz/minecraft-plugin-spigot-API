@@ -1,11 +1,7 @@
 package com.mallonflowerz.spigot.Listener.Entity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -15,21 +11,31 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Cat;
+import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.ElderGuardian;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
+import org.bukkit.entity.Giant;
 import org.bukkit.entity.Hoglin;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.MagmaCube;
+import org.bukkit.entity.Phantom;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Piglin;
 import org.bukkit.entity.PiglinBrute;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Ravager;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.Vindicator;
 import org.bukkit.entity.Warden;
+import org.bukkit.entity.Witch;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
@@ -41,12 +47,14 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.mallonflowerz.spigot.Plugin;
+import com.mallonflowerz.spigot.creatures.RavagerWithWitch;
 import com.mallonflowerz.spigot.creatures.dia_10.SkeletonsLevelUp;
 import com.mallonflowerz.spigot.creatures.dia_4.Spiders;
 import com.mallonflowerz.spigot.creatures.dia_6.Blazes;
 import com.mallonflowerz.spigot.creatures.dia_6.Creepers;
 import com.mallonflowerz.spigot.creatures.dia_6.Skeletons;
 import com.mallonflowerz.spigot.creatures.dia_6.WitherSkeletons;
+import com.mallonflowerz.spigot.items.Bow;
 import com.mallonflowerz.spigot.items.DefinitiveArmor;
 import com.mallonflowerz.spigot.statics.Mundos;
 import com.mallonflowerz.spigot.statics.Potions;
@@ -266,15 +274,13 @@ public class SpawnListener implements Listener {
         if (days >= 12) {
             if (event.getEntityType() == EntityType.SLIME) {
                 Slime slime = (Slime) event.getEntity();
+                slime.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveHelmet());
+                slime.getEquipment().setItemInMainHandDropChance(0.5F);
                 if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT) {
-                    slime.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveHelmet());
-                    slime.getEquipment().setItemInMainHandDropChance(2.0F);
                     return;
                 }
                 slime.setSize(16);
                 slime.setCustomName(ChatColor.GREEN + "Giga Slime Corrosivo");
-                slime.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveHelmet());
-                slime.getEquipment().setItemInMainHandDropChance(2.0F);
                 int x = random.nextInt(4) + 1;
 
                 double originalMaxHealth = slime.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
@@ -327,7 +333,68 @@ public class SpawnListener implements Listener {
             }
         }
         // Dia 14
+        if (days >= 14) {
+            Location location = event.getLocation();
+            if (location.getWorld().getBiome(location) == Biome.PLAINS) {
+                if (random.nextInt(100) + 1 <= 2) {
+                    location.setX(location.getX() + 2);
+                    location.setZ(location.getZ() + 2);
+                    CaveSpider brute = location.getWorld().spawn(location, CaveSpider.class);
+                    brute.addPotionEffect(
+                            new PotionEffect(PotionEffectType.INCREASE_DAMAGE, -1, 9, true, false));
+                    brute.setCustomName(ChatColor.BOLD + "Cave Spider OP");
+                    int x = random.nextInt(30) + 1;
+                    double originalMaxHealth = brute.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                    double newMaxHealth = originalMaxHealth * x;
+                    brute.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(newMaxHealth);
+                    brute.getEquipment().setItemInOffHand(new ItemStack(Material.TORCH));
+                    brute.getEquipment().setItemInOffHandDropChance(0F);
+                    brute.getEquipment().setBoots(Bow.craftBow());
+                    brute.getEquipment().setBootsDropChance(0.5F);
+                }
+            }
+            if (event.getEntityType() == EntityType.COW && mundos.isOverworld(event.getEntity())) {
+                Ravager ravager = location.getWorld().spawn(location, Ravager.class);
+                ravager.addPassenger(location.getWorld().spawnEntity(location, EntityType.SKELETON));
+                event.setCancelled(true);
+            } else if (event.getEntityType() == EntityType.PHANTOM && mundos.isOverworld(event.getEntity())) {
+                Phantom phantom = (Phantom) event.getEntity();
+                phantom.setSize(8);
+                double originalMaxHealth = phantom.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                double newMaxHealth = originalMaxHealth * 2;
+                phantom.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(newMaxHealth);
+            } else if (event.getEntityType() == EntityType.PIGLIN &&
+                    mundos.isNether(event.getEntity())) {
+                if (random.nextInt(100) + 1 <= 5) {
+                    ravagerWitch.spawnRavager(event.getLocation());
+                }
+                event.setCancelled(true);
+            } else if (event.getEntityType() == EntityType.MAGMA_CUBE && mundos.isNether(event.getEntity())) {
+                MagmaCube cube = (MagmaCube) event.getEntity();
+                if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT) {
+                    return;
+                }
+                cube.setSize(14);
+            } else if (event.getEntityType() == EntityType.VINDICATOR &&
+                    mundos.isOverworld(event.getEntity())) {
+                Vindicator v = (Vindicator) event.getEntity();
+                v.getEquipment().setItemInMainHand(new ItemStack(Material.NETHERITE_AXE));
+                v.addPotionEffect(
+                        new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, -1, 0));
+            } else if (event.getEntityType() == EntityType.DROWNED ||
+                    event.getEntityType() == EntityType.SQUID || event.getEntityType() == EntityType.GLOW_SQUID) {
+                if (event.getEntityType() == EntityType.SQUID || event.getEntityType() == EntityType.GLOW_SQUID) {
+                    if (random.nextInt(100) + 1 <= 2) {
+                        event.setCancelled(true);
+                        event.getLocation().getWorld().spawn(event.getLocation(), ElderGuardian.class);
+                    }
+                } else {
+                    event.setCancelled(true);
+                    event.getLocation().getWorld().spawn(event.getLocation(), ElderGuardian.class);
+                }
 
+            }
+        }
         // Dia 16
 
         // Dia 18
@@ -340,6 +407,7 @@ public class SpawnListener implements Listener {
     private final Skeletons skeletons = new Skeletons();
     private final SkeletonsLevelUp skeletonsOp = new SkeletonsLevelUp();
     private final Blazes blazes = new Blazes();
+    private final RavagerWithWitch ravagerWitch = new RavagerWithWitch();
     private final Creepers creepers = new Creepers();
     private final WitherSkeletons witherSkeletons = new WitherSkeletons();
     private final Random random = new Random();
