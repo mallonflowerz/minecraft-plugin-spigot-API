@@ -111,7 +111,7 @@ public class EndConfig implements Listener {
                     event.getDrops().clear();
                 } else if (days >= 12) {
                     event.getDrops().clear();
-                    if (random.nextInt(100) + 1 <= 10) {
+                    if (random.nextInt(100) + 1 <= 10 && days < 16) {
                         event.getDrops().add(DefinitiveArmor.craftDefinitiveBoots());
                     }
                 }

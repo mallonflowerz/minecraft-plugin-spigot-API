@@ -280,8 +280,6 @@ public class SpawnListener implements Listener {
         if (days >= 12) {
             if (event.getEntityType() == EntityType.SLIME) {
                 Slime slime = (Slime) event.getEntity();
-                slime.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveHelmet());
-                slime.getEquipment().setItemInMainHandDropChance(0.5F);
                 if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SLIME_SPLIT) {
                     return;
                 }
@@ -302,8 +300,6 @@ public class SpawnListener implements Listener {
                 Ghast ghast = (Ghast) event.getEntity();
                 addRandomPotions(ghast);
                 ghast.setCustomName(ChatColor.AQUA + "Ghast Impredecible");
-                ghast.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveChest());
-                ghast.getEquipment().setItemInMainHandDropChance(2.0F);
 
                 int x = random.nextInt(4) + 1;
                 double originalMaxHealth = ghast.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
@@ -321,13 +317,11 @@ public class SpawnListener implements Listener {
                 Warden warden = (Warden) event.getEntity();
                 warden.addPotionEffect(
                         new PotionEffect(PotionEffectType.REGENERATION, -1, 1));
-                warden.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveLeggings());
-                warden.getEquipment().setItemInMainHandDropChance(2.0F);
                 if (random.nextInt(100) + 1 <= 20) {
+                    warden.setCustomName(ChatColor.DARK_BLUE + "Warden Doble W");
                     Wither wither = (Wither) warden.getWorld()
                             .spawnEntity(warden.getLocation(), EntityType.WITHER);
-                    wither.getEquipment().setItemInMainHand(DefinitiveArmor.craftDefinitiveLeggings());
-                    wither.getEquipment().setItemInMainHandDropChance(2.0F);
+                    wither.setCustomName(ChatColor.DARK_BLUE + "Wither Doble W");
                 }
             } else if (event.getEntityType() == EntityType.HOGLIN &&
                     mundos.isNether(event.getEntity()) && days < 14) {

@@ -43,6 +43,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.mallonflowerz.spigot.Plugin;
 import com.mallonflowerz.spigot.items.Bow;
+import com.mallonflowerz.spigot.items.DefinitiveArmor;
 import com.mallonflowerz.spigot.statics.Mundos;
 import com.mallonflowerz.spigot.statics.Potions;
 
@@ -369,12 +370,36 @@ public class EntityEvents implements Listener {
             }
         }
 
-        if (days >= 14) {
+        if (days >= 14 && days < 16) {
             if (event.getEntityType() == EntityType.CAVE_SPIDER &&
                     event.getEntity().getCustomName() != null &&
                     ChatColor.stripColor(event.getEntity().getCustomName()).equals("Cave Spider OP")) {
                 if (random.nextInt(100) + 1 <= 5) {
                     event.getDrops().add(Bow.craftBow());
+                }
+            } else if (event.getEntityType() == EntityType.GHAST &&
+                    event.getEntity().getCustomName() != null &&
+                    ChatColor.stripColor(event.getEntity().getCustomName()).equals("Ghast Impredecible")) {
+                if (random.nextInt(100) + 1 <= 30) {
+                    event.getDrops().add(DefinitiveArmor.craftDefinitiveChest());
+                }
+            } else if (event.getEntityType() == EntityType.SLIME &&
+                    event.getEntity().getCustomName() != null &&
+                    ChatColor.stripColor(event.getEntity().getCustomName()).equals("Giga Slime Corrosivo")) {
+                if (random.nextInt(100) + 1 <= 10) {
+                    event.getDrops().add(DefinitiveArmor.craftDefinitiveHelmet());
+                }
+            } else if (event.getEntityType() == EntityType.WARDEN &&
+                    mundos.isOverworld(event.getEntity())) {
+                if (random.nextInt(100) + 1 <= 30) {
+                    event.getDrops().add(DefinitiveArmor.craftDefinitiveLeggings());
+                }
+            } else if (event.getEntityType() == EntityType.WITHER &&
+                    mundos.isOverworld(event.getEntity())
+                    && event.getEntity().getCustomName() != null &&
+                    ChatColor.stripColor(event.getEntity().getCustomName()).equals("Wither Doble W")) {
+                if (random.nextInt(100) + 1 <= 30) {
+                    event.getDrops().add(DefinitiveArmor.craftDefinitiveLeggings());
                 }
             }
         }
