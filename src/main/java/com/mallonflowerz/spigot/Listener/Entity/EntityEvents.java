@@ -27,7 +27,6 @@ import org.bukkit.entity.Slime;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Warden;
 import org.bukkit.entity.Witch;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -43,6 +42,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.mallonflowerz.spigot.Plugin;
+import com.mallonflowerz.spigot.items.Bow;
 import com.mallonflowerz.spigot.statics.Mundos;
 import com.mallonflowerz.spigot.statics.Potions;
 
@@ -52,11 +52,11 @@ public class EntityEvents implements Listener {
     private final Random random = new Random();
     private Mundos mundos = new Mundos();
     private Map<Chicken, Silverfish> chickenToSilverfish = new HashMap<>();
-    private Map<EntityType, Zombie> entityToZombie = new HashMap<>();
     private Set<EntityType> entitiesDropClear = new HashSet<>();
 
     public EntityEvents(Plugin plugin) {
         this.plugin = plugin;
+        addEntities();
     }
 
     @EventHandler
@@ -335,13 +335,6 @@ public class EntityEvents implements Listener {
         }
 
         if (days >= 8) {
-            if (entityToZombie.containsKey(event.getEntityType())) {
-                Zombie zombie = entityToZombie.get(event.getEntityType());
-                if (zombie != null) {
-                    zombie.setHealth(0);
-                }
-                entityToZombie.remove(event.getEntityType());
-            }
             if (entitiesDropClear.contains(event.getEntityType())) {
                 event.getDrops().clear();
             }
@@ -373,6 +366,16 @@ public class EntityEvents implements Listener {
                 event.getDrops().add(new ItemStack(Material.DIAMOND, random.nextInt(10)));
             } else if (event.getEntityType() == EntityType.SKELETON && mundos.isOverworld(event.getEntity())) {
                 event.getDrops().add(new ItemStack(Material.DIAMOND, random.nextInt(10)));
+            }
+        }
+
+        if (days >= 14) {
+            if (event.getEntityType() == EntityType.CAVE_SPIDER &&
+                    event.getEntity().getCustomName() != null &&
+                    ChatColor.stripColor(event.getEntity().getCustomName()).equals("Cave Spider OP")) {
+                if (random.nextInt(100) + 1 <= 5) {
+                    event.getDrops().add(Bow.craftBow());
+                }
             }
         }
     }
@@ -489,5 +492,22 @@ public class EntityEvents implements Listener {
             entity.addPotionEffect(potionEffect);
             entity.damage(damage);
         }
+    }
+
+    public void addEntities() {
+        entitiesDropClear.add(EntityType.IRON_GOLEM);
+        entitiesDropClear.add(EntityType.ZOMBIFIED_PIGLIN);
+        entitiesDropClear.add(EntityType.GHAST);
+        entitiesDropClear.add(EntityType.GUARDIAN);
+        entitiesDropClear.add(EntityType.MAGMA_CUBE);
+        entitiesDropClear.add(EntityType.ENDERMAN);
+        entitiesDropClear.add(EntityType.WITCH);
+        entitiesDropClear.add(EntityType.WITHER_SKELETON);
+        entitiesDropClear.add(EntityType.EVOKER);
+        entitiesDropClear.add(EntityType.PHANTOM);
+        entitiesDropClear.add(EntityType.SLIME);
+        entitiesDropClear.add(EntityType.DROWNED);
+        entitiesDropClear.add(EntityType.BLAZE);
+        entitiesDropClear.add(EntityType.ZOMBIE);
     }
 }

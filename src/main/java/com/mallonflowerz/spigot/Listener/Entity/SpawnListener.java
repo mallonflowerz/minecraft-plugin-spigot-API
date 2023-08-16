@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Biome;
+import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Chicken;
@@ -20,7 +21,6 @@ import org.bukkit.entity.ElderGuardian;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
-import org.bukkit.entity.Giant;
 import org.bukkit.entity.Hoglin;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.MagmaCube;
@@ -28,19 +28,20 @@ import org.bukkit.entity.Phantom;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Piglin;
 import org.bukkit.entity.PiglinBrute;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Ravager;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.Villager;
 import org.bukkit.entity.Vindicator;
 import org.bukkit.entity.Warden;
-import org.bukkit.entity.Witch;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -54,8 +55,8 @@ import com.mallonflowerz.spigot.creatures.dia_6.Blazes;
 import com.mallonflowerz.spigot.creatures.dia_6.Creepers;
 import com.mallonflowerz.spigot.creatures.dia_6.Skeletons;
 import com.mallonflowerz.spigot.creatures.dia_6.WitherSkeletons;
-import com.mallonflowerz.spigot.items.Bow;
 import com.mallonflowerz.spigot.items.DefinitiveArmor;
+import com.mallonflowerz.spigot.items.ZombieDamage;
 import com.mallonflowerz.spigot.statics.Mundos;
 import com.mallonflowerz.spigot.statics.Potions;
 
@@ -63,6 +64,8 @@ public class SpawnListener implements Listener {
 
     public SpawnListener(Plugin plugin) {
         this.plugin = plugin;
+        // Dia 8
+        addMobsPasives();
     }
 
     @EventHandler
@@ -119,7 +122,8 @@ public class SpawnListener implements Listener {
             } else if (event.getEntityType() == EntityType.CREEPER) {
                 LivingEntity creeper = event.getEntity();
                 creeper = creepers.onSpawnCreeper(event);
-            } else if (event.getEntityType() == EntityType.ZOMBIE) {
+            } else if (event.getEntityType() == EntityType.ZOMBIE &&
+                    event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
                 event.setCancelled(true);
                 event.getLocation().getWorld().spawnEntity(event.getLocation(), EntityType.VINDICATOR);
             } else if (event.getEntityType() == EntityType.WITHER_SKELETON &&
@@ -153,20 +157,17 @@ public class SpawnListener implements Listener {
                 entity.addPotionEffect(
                         new PotionEffect(Potions.FR, Integer.MAX_VALUE, 0, true, false));
                 if (mobsPasives.contains(entity.getType())) {
-                    Zombie zombie = (Zombie) entity.getLocation().getWorld().spawnEntity(entity.getLocation(),
-                            EntityType.ZOMBIE);
-                    zombie.setCustomName("ZombieAll");
-                    zombie.setCustomNameVisible(false);
-                    zombie.setSilent(true);
-
-                    zombie.setVisibleByDefault(false);
-
-                    zombie.addPotionEffect(
-                            new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0, true, false));
-                    entity.addPassenger(zombie);
-                    entity.addPotionEffect(new PotionEffect(Potions.SP, Integer.MAX_VALUE, 1, true, false));
-
-                    entityToZombie.put(entity.getType(), zombie);
+                    Zombie z = zm.z(entity.getLocation());
+                    entity.addPassenger(z);
+                    entity.addPotionEffect(
+                            new PotionEffect(PotionEffectType.SPEED, -1, 1, true, false));
+                    entitiesByZombie.put(entity, z);
+                }
+                if (entity.getType() == EntityType.BAT && mundos.isOverworld(entity)) {
+                    event.setCancelled(true);
+                    if (random.nextInt(100) + 1 <= 2) {
+                        event.getLocation().getWorld().spawn(entity.getLocation(), Blaze.class);
+                    }
                 }
                 if (event.getEntityType() == EntityType.ENDERMAN &&
                         mundos.isOverworld(event.getEntity()))
@@ -211,6 +212,11 @@ public class SpawnListener implements Listener {
                     PiglinBrute piglinBrute = (PiglinBrute) event.getEntity();
                     piglinBrute.addPotionEffect(
                             new PotionEffect(Potions.DR, Integer.MAX_VALUE, 0));
+                }
+                if (event.getEntityType() == EntityType.SHEEP &&
+                        mundos.isOverworld(entity)) {
+                    event.getLocation().getWorld().spawn(event.getLocation(), Chicken.class);
+                    event.setCancelled(true);
                 }
             }
         }
@@ -349,8 +355,6 @@ public class SpawnListener implements Listener {
                     brute.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(newMaxHealth);
                     brute.getEquipment().setItemInOffHand(new ItemStack(Material.TORCH));
                     brute.getEquipment().setItemInOffHandDropChance(0F);
-                    brute.getEquipment().setBoots(Bow.craftBow());
-                    brute.getEquipment().setBootsDropChance(0.5F);
                 }
             }
             if (event.getEntityType() == EntityType.COW && mundos.isOverworld(event.getEntity())) {
@@ -402,6 +406,45 @@ public class SpawnListener implements Listener {
         // Dia 20
     }
 
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked().getType() == EntityType.VILLAGER) {
+            Villager v = (Villager) event.getRightClicked();
+            if (v.getPassengers().isEmpty()) {
+                v.addPotionEffect(
+                        new PotionEffect(PotionEffectType.SPEED, -1, 1, true, false));
+                Zombie z = zm.z(v.getLocation());
+                v.addPassenger(z);
+                entitiesByZombie.put(v, z);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        Integer days = plugin.getDays();
+        if (days >= 6) {
+            if (chickenToSilverfish.containsKey(event.getEntity())) {
+                Chicken chicken = (Chicken) event.getEntity();
+                for (Entity e : chicken.getPassengers()) {
+                    if (e.getType() == EntityType.SILVERFISH) {
+                        Silverfish s = (Silverfish) e;
+                        s.setHealth(0.0);
+                    }
+                }
+            }
+            if (entitiesByZombie.containsKey(event.getEntity())) {
+                LivingEntity entity = event.getEntity();
+                for (Entity e : entity.getPassengers()) {
+                    if (e.getType() == EntityType.ZOMBIE) {
+                        Zombie z = (Zombie) e;
+                        z.damage(199);
+                    }
+                }
+            }
+        }
+    }
+
     private Plugin plugin;
     private final Spiders spiders = new Spiders();
     private final Skeletons skeletons = new Skeletons();
@@ -411,9 +454,10 @@ public class SpawnListener implements Listener {
     private final Creepers creepers = new Creepers();
     private final WitherSkeletons witherSkeletons = new WitherSkeletons();
     private final Random random = new Random();
+    private ZombieDamage zm = new ZombieDamage();
+    private Map<Entity, Zombie> entitiesByZombie = new HashMap<>();
     private Map<Chicken, Silverfish> chickenToSilverfish = new HashMap<>();
     private Set<EntityType> mobsPasives = new HashSet<>();
-    private Map<EntityType, Zombie> entityToZombie = new HashMap<>();
     private final Mundos mundos = new Mundos();
 
     private void applyRandomEffect(LivingEntity entity) {
@@ -439,6 +483,32 @@ public class SpawnListener implements Listener {
             PotionEffect potionEffect = new PotionEffect(effectType, effectDuration, effectLevel);
             entity.addPotionEffect(potionEffect);
         }
+    }
+
+    public void addMobsPasives() {
+        mobsPasives.add(EntityType.ALLAY);
+        mobsPasives.add(EntityType.AXOLOTL);
+        // mobsPasives.add(EntityType.BAT);
+        mobsPasives.add(EntityType.CAT);
+        // mobsPasives.add(EntityType.CHICKEN);
+        mobsPasives.add(EntityType.COD);
+        mobsPasives.add(EntityType.COW);
+        mobsPasives.add(EntityType.DONKEY);
+        mobsPasives.add(EntityType.DOLPHIN);
+        mobsPasives.add(EntityType.FOX);
+        mobsPasives.add(EntityType.GOAT);
+        mobsPasives.add(EntityType.HOGLIN);
+        mobsPasives.add(EntityType.HORSE);
+        mobsPasives.add(EntityType.MULE);
+        mobsPasives.add(EntityType.OCELOT);
+        mobsPasives.add(EntityType.PIG);
+        mobsPasives.add(EntityType.POLAR_BEAR);
+        mobsPasives.add(EntityType.RABBIT);
+        mobsPasives.add(EntityType.SHEEP);
+        mobsPasives.add(EntityType.SKELETON_HORSE);
+        mobsPasives.add(EntityType.SQUID);
+        mobsPasives.add(EntityType.STRIDER);
+        mobsPasives.add(EntityType.VILLAGER);
     }
 
     private void addRandomPotions(LivingEntity entity) {

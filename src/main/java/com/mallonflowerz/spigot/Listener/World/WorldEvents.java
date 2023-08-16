@@ -1,11 +1,7 @@
 package com.mallonflowerz.spigot.Listener.World;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,8 +20,6 @@ public class WorldEvents implements Listener {
 
     private Plugin plugin;
     private boolean isRaining = false;
-    private Set<EntityType> mobsPasives = new HashSet<>();
-    private Set<EntityType> entitiesDropClear = new HashSet<>();
     private RecipeDia6 recipes;
     private RecipeDia10 recipesDay10;
 
@@ -106,8 +100,6 @@ public class WorldEvents implements Listener {
                 plugin.getServer().addRecipe(recipesDay10.registerGoldenApplePlusRecipe());
             }
             plugin.getServer().addRecipe(recipesDay10.registerShieldOpRecipe());
-            addMobsPasives();
-            addEntities();
         }
 
     }
@@ -164,48 +156,5 @@ public class WorldEvents implements Listener {
             }
         }
         return false;
-    }
-
-    public void addMobsPasives() {
-        mobsPasives.add(EntityType.ALLAY);
-        mobsPasives.add(EntityType.AXOLOTL);
-        mobsPasives.add(EntityType.BAT);
-        mobsPasives.add(EntityType.CAT);
-        // mobsPasives.add(EntityType.CHICKEN);
-        mobsPasives.add(EntityType.COD);
-        mobsPasives.add(EntityType.COW);
-        mobsPasives.add(EntityType.DONKEY);
-        mobsPasives.add(EntityType.DOLPHIN);
-        mobsPasives.add(EntityType.FOX);
-        mobsPasives.add(EntityType.GOAT);
-        mobsPasives.add(EntityType.HOGLIN);
-        mobsPasives.add(EntityType.HORSE);
-        mobsPasives.add(EntityType.MULE);
-        mobsPasives.add(EntityType.OCELOT);
-        mobsPasives.add(EntityType.PIG);
-        mobsPasives.add(EntityType.POLAR_BEAR);
-        mobsPasives.add(EntityType.RABBIT);
-        mobsPasives.add(EntityType.SHEEP);
-        mobsPasives.add(EntityType.SKELETON_HORSE);
-        mobsPasives.add(EntityType.SQUID);
-        mobsPasives.add(EntityType.STRIDER);
-        mobsPasives.add(EntityType.VILLAGER);
-    }
-
-    public void addEntities() {
-        entitiesDropClear.add(EntityType.IRON_GOLEM);
-        entitiesDropClear.add(EntityType.ZOMBIFIED_PIGLIN);
-        entitiesDropClear.add(EntityType.GHAST);
-        entitiesDropClear.add(EntityType.GUARDIAN);
-        entitiesDropClear.add(EntityType.MAGMA_CUBE);
-        entitiesDropClear.add(EntityType.ENDERMAN);
-        entitiesDropClear.add(EntityType.WITCH);
-        entitiesDropClear.add(EntityType.WITHER_SKELETON);
-        entitiesDropClear.add(EntityType.EVOKER);
-        entitiesDropClear.add(EntityType.PHANTOM);
-        entitiesDropClear.add(EntityType.SLIME);
-        entitiesDropClear.add(EntityType.DROWNED);
-        entitiesDropClear.add(EntityType.BLAZE);
-        entitiesDropClear.add(EntityType.ZOMBIE);
     }
 }
