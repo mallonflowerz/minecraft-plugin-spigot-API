@@ -1,0 +1,9 @@
+{
+    "pack":{
+        "pack_format": 15,
+        "description": [
+            {"text": "Resource Pack by ", "color": "light_purple", "bold": false, "italic": false},
+            {"text": "MallonFlowerz", "color": "yellow", "bold": true, "italic": true, "underlined": true}
+        ]
+    }
+}
