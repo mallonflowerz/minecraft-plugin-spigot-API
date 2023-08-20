@@ -28,6 +28,7 @@ import org.bukkit.entity.Phantom;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Piglin;
 import org.bukkit.entity.PiglinBrute;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Ravager;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
@@ -55,7 +56,6 @@ import com.mallonflowerz.spigot.creatures.dia_6.Blazes;
 import com.mallonflowerz.spigot.creatures.dia_6.Creepers;
 import com.mallonflowerz.spigot.creatures.dia_6.Skeletons;
 import com.mallonflowerz.spigot.creatures.dia_6.WitherSkeletons;
-import com.mallonflowerz.spigot.items.DefinitiveArmor;
 import com.mallonflowerz.spigot.items.ZombieDamage;
 import com.mallonflowerz.spigot.statics.Mundos;
 import com.mallonflowerz.spigot.statics.Potions;
@@ -76,8 +76,9 @@ public class SpawnListener implements Listener {
             if (event.getEntityType() != EntityType.PLAYER) {
                 LivingEntity entity = event.getEntity();
                 entity.addPotionEffects(Potions.potions());
-            } else if (event.getEntityType() == EntityType.WARDEN && days < 12) {
-                event.setCancelled(true);
+                if (event.getEntityType() == EntityType.WARDEN) {
+                    event.setCancelled(true);
+                }
             }
         }
 
@@ -316,12 +317,16 @@ public class SpawnListener implements Listener {
                     mundos.isOverworld(event.getEntity())) {
                 Warden warden = (Warden) event.getEntity();
                 warden.addPotionEffect(
-                        new PotionEffect(PotionEffectType.REGENERATION, -1, 1));
+                        new PotionEffect(PotionEffectType.REGENERATION, -1, 2));
                 if (random.nextInt(100) + 1 <= 20) {
                     warden.setCustomName(ChatColor.DARK_BLUE + "Warden Doble W");
                     Wither wither = (Wither) warden.getWorld()
                             .spawnEntity(warden.getLocation(), EntityType.WITHER);
                     wither.setCustomName(ChatColor.DARK_BLUE + "Wither Doble W");
+                    for (Player p : plugin.getServer().getOnlinePlayers()) {
+                        warden.setTarget(p);
+                        wither.setTarget(p);
+                    }
                 }
             } else if (event.getEntityType() == EntityType.HOGLIN &&
                     mundos.isNether(event.getEntity()) && days < 14) {

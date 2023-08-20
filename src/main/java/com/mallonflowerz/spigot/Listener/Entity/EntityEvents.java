@@ -267,8 +267,10 @@ public class EntityEvents implements Listener {
             } else if (event.getDamager().getType() == EntityType.WARDEN &&
                     mundos.isOverworld(event.getDamager())) {
                 Player player = (Player) event.getEntity();
-                player.addPotionEffect(
-                        new PotionEffect(PotionEffectType.WITHER, 200, 6));
+                if (player != null) {
+                    player.addPotionEffect(
+                            new PotionEffect(PotionEffectType.WITHER, 200, 6));
+                }
             } else if (event.getDamager().getType() == EntityType.ARROW &&
                     event.getEntityType() == EntityType.WARDEN) {
                 if (random.nextInt(100) + 1 >= 50) {

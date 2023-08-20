@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="CO"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-17\bin"/>
-    <property name="sun.java.command" value="C:\Users\marlo\AppData\Local\Temp\surefire6310060191247952367\surefirebooter8390182978508939261.jar C:\Users\marlo\AppData\Local\Temp\surefire6310060191247952367 2023-08-16T15-09-39_584-jvmRun1 surefire7965092476787707126tmp surefire_07532451940735372543tmp"/>
+    <property name="sun.java.command" value="C:\Users\marlo\AppData\Local\Temp\surefire13036026171882314144\surefirebooter15596666067777181957.jar C:\Users\marlo\AppData\Local\Temp\surefire13036026171882314144 2023-08-20T14-24-36_726-jvmRun1 surefire6233241533554839629tmp surefire_016093729608092670239tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="c:\Users\marlo\Documents\NetBeansProjects\minecraft-plugin-spigot-API\target\test-classes;c:\Users\marlo\Documents\NetBeansProjects\minecraft-plugin-spigot-API\target\classes;C:\Users\marlo\.m2\repository\junit\junit\4.11\junit-4.11.jar;C:\Users\marlo\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\marlo\.m2\repository\org\spigotmc\spigot-api\1.20.1-R0.1-SNAPSHOT\spigot-api-1.20.1-R0.1-SNAPSHOT.jar;C:\Users\marlo\.m2\repository\com\google\guava\guava\31.1-jre\guava-31.1-jre.jar;C:\Users\marlo\.m2\repository\com\google\guava\failureaccess\1.0.1\failureaccess-1.0.1.jar;C:\Users\marlo\.m2\repository\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;C:\Users\marlo\.m2\repository\com\google\code\findbugs\jsr305\3.0.2\jsr305-3.0.2.jar;C:\Users\marlo\.m2\repository\org\checkerframework\checker-qual\3.12.0\checker-qual-3.12.0.jar;C:\Users\marlo\.m2\repository\com\google\errorprone\error_prone_annotations\2.11.0\error_prone_annotations-2.11.0.jar;C:\Users\marlo\.m2\repository\com\google\j2objc\j2objc-annotations\1.3\j2objc-annotations-1.3.jar;C:\Users\marlo\.m2\repository\com\google\code\gson\gson\2.10\gson-2.10.jar;C:\Users\marlo\.m2\repository\org\joml\joml\1.10.5\joml-1.10.5.jar;C:\Users\marlo\.m2\repository\net\md-5\bungeecord-chat\1.20-R0.1\bungeecord-chat-1.20-R0.1.jar;C:\Users\marlo\.m2\repository\org\yaml\snakeyaml\2.0\snakeyaml-2.0.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\marlo\AppData\Local\Temp\surefire6310060191247952367\surefirebooter8390182978508939261.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\marlo\AppData\Local\Temp\surefire13036026171882314144\surefirebooter15596666067777181957.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.6+9-LTS-190"/>
@@ -56,5 +56,5 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="shouldAnswerWithTrue" classname="com.mallonflowerz.spigot.PluginTest" time="0.003"/>
+  <testcase name="shouldAnswerWithTrue" classname="com.mallonflowerz.spigot.PluginTest" time="0.002"/>
 </testsuite>
