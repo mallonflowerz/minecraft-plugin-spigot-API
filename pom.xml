@@ -30,12 +30,35 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-		<!--This adds the Spigot API artifact to the build -->
+		<!--This
+		adds the Spigot API artifact to the build -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.24</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sk89q.worldedit</groupId>
+			<artifactId>worldedit-bukkit</artifactId>
+			<version>7.2.5</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/worldedit-bukkit-7.2.5.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fastasyncworldedit</groupId>
+			<artifactId>FastAsyncWorldEdit-Core</artifactId>
+			<version>2.9.0</version>
 		</dependency>
 	</dependencies>
 
